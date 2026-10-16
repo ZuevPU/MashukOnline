@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1", "localhost"],
   // Индикатор разработки перекрывает содержимое на скриншотах
   devIndicators: false,
+  // Пакеты, которые нельзя бандлить: работают с ФС и нативными частями.
+  serverExternalPackages: ["pdf-lib", "@pdf-lib/fontkit", "exceljs", "archiver", "postgres"],
   // В standalone-сборку нужно включить файлы, которые читаются из ФС в рантайме:
   // шаблоны согласий и шрифт для заполнения PDF.
   outputFileTracingIncludes: {

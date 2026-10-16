@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
   Compass,
   Cpu,
@@ -37,11 +38,24 @@ export function CourseCard({ course }: { course: Course }) {
 
   return (
     <article className="card card--hover overflow-hidden">
-      <div
-        className="relative flex h-40 items-center justify-center"
-        style={{ background: `linear-gradient(135deg, ${season.accent}, ${season.strong})` }}
-      >
-        <Icon size={58} strokeWidth={1.3} className="text-white/90" aria-hidden="true" />
+      <div className="relative h-44 overflow-hidden">
+        {course.image ? (
+          <Image
+            src={course.image}
+            alt={course.title}
+            fill
+            unoptimized
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-cover"
+          />
+        ) : (
+          <div
+            className="flex h-full items-center justify-center"
+            style={{ background: `linear-gradient(135deg, ${season.accent}, ${season.strong})` }}
+          >
+            <Icon size={58} strokeWidth={1.3} className="text-white/90" aria-hidden="true" />
+          </div>
+        )}
         <span className="absolute top-4 left-4 rounded-full bg-white/85 px-3 py-1 text-micro font-semibold tracking-wide text-navy uppercase">
           {course.tag}
         </span>

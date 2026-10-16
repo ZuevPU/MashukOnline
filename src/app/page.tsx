@@ -1,8 +1,8 @@
 import Image from "next/image";
 import { ButtonLink } from "@/components/ui/Button";
 import { MountainLine } from "@/components/brand/MountainLine";
-import { ProgramCatalog } from "@/components/programs/ProgramCatalog";
-import { getAllPrograms, getShowcaseStats } from "@/lib/data";
+import { CourseCard } from "@/components/courses/CourseCard";
+import { COURSES } from "@/lib/courses";
 import { DIRECTIONS } from "@/lib/types";
 
 const ADVANTAGES = [
@@ -22,10 +22,7 @@ const ADVANTAGES = [
 
 export const dynamic = "force-dynamic";
 
-export default async function HomePage() {
-  const programs = await getAllPrograms();
-  const stats = getShowcaseStats(programs);
-
+export default function HomePage() {
   return (
     <>
       {/* ---------------------------------------------------------------- HERO */}
@@ -66,16 +63,6 @@ export default async function HomePage() {
         <MountainLine className="text-white" />
       </section>
 
-      {/* --------------------------------------------------------------- ЦИФРЫ */}
-      <section className="border-b border-[var(--line-soft)] bg-white">
-        <div className="wrap grid grid-cols-2 gap-6 py-10 md:grid-cols-4">
-          <Stat value={String(stats.programs)} label="программ" />
-          <Stat value={stats.participants ? `${stats.participants}+` : "—"} label="участников" />
-          <Stat value={String(stats.upcoming)} label="идёт набор" />
-          <Stat value={String(stats.days)} label="дней программы" />
-        </div>
-      </section>
-
       {/* ----------------------------------------------------------- ПРЕИМУЩЕСТВА */}
       <section className="section">
         <div className="wrap grid gap-6 md:grid-cols-3">
@@ -104,7 +91,11 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <ProgramCatalog programs={programs} />
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {COURSES.map((course) => (
+              <CourseCard key={course.slug} course={course} />
+            ))}
+          </div>
         </div>
       </section>
 
@@ -154,16 +145,5 @@ export default async function HomePage() {
         </div>
       </section>
     </>
-  );
-}
-
-function Stat({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="flex flex-col gap-1">
-      <span className="font-display text-[clamp(30px,4vw,46px)] leading-none font-semibold tracking-[-0.05em] text-navy">
-        {value}
-      </span>
-      <span className="text-meta text-ink-soft">{label}</span>
-    </div>
   );
 }

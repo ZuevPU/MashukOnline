@@ -33,8 +33,11 @@ export function SiteFooter() {
             <a href="https://lms.mashuk.online/" target="_blank" rel="noopener" className="no-underline hover:text-white">
               Онлайн-курсы
             </a>
-            <Link href="/#programs" className="no-underline hover:text-white">
+            <Link href="/courses" className="no-underline hover:text-white">
               Программы
+            </Link>
+            <Link href="/privacy" className="no-underline hover:text-white">
+              Политика конфиденциальности
             </Link>
           </nav>
           <p className="m-0 text-caption text-white/45">© 2026, АНО «Центр знаний «Машук»</p>

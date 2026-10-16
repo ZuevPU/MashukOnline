@@ -6,7 +6,7 @@ import { lmsConfigured } from "@/lib/lms-sso";
 
 const NAV = [
   { href: "https://центрзнаниймашук.рф/", label: "О Центре", external: true },
-  { href: "/#programs", label: "Программы" },
+  { href: "/courses", label: "Программы" },
   { href: "/#support", label: "Поддержка" },
   { href: "https://lms.mashuk.online/", label: "Онлайн-курсы", external: true },
 ];

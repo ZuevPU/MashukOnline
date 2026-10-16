@@ -15,12 +15,6 @@ www.{$DOMAIN} {
 {$DOMAIN} {
 	encode zstd gzip
 
-	# Долгий кэш неизменяемой статики Next и наших медиафайлов
-	@nextstatic path /_next/static/*
-	header @nextstatic Cache-Control "public, max-age=31536000, immutable"
-	@media path /courses/* /brand/* /uploads/*
-	header @media Cache-Control "public, max-age=604800"
-
 	# Grafana доступна по адресу https://{$DOMAIN}/grafana/
 	handle /grafana/* {
 		reverse_proxy grafana:3000

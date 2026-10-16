@@ -30,13 +30,20 @@ $COMPOSE pull -q app tools >/dev/null 2>&1 || true
 cfg_after="$(config_hash)"
 img_after="$(docker image inspect --format '{{.Id}}' "$APP_IMAGE" 2>/dev/null || true)"
 
+cfg_changed=false
+[ "$cfg_before" != "$cfg_after" ] && cfg_changed=true
+img_changed=false
+[ -n "$img_before" ] && [ "$img_before" != "$img_after" ] && img_changed=true
+
 # Ни образ, ни конфигурация не изменились — ничего не делаем
-if [ "$cfg_before" = "$cfg_after" ] && [ -n "$img_before" ] && [ "$img_before" = "$img_after" ]; then
+if [ "$cfg_changed" = false ] && [ "$img_changed" = false ]; then
   exit 0
 fi
 
-echo "[$(date -Is)] Обновление: изменились образ или конфигурация"
+echo "[$(date -Is)] Обновление: конфигурация=$cfg_changed образ=$img_changed"
 $COMPOSE run --rm tools pnpm db:migrate
 $COMPOSE up -d --remove-orphans
+# Caddyfile подключён как том — при его изменении нужен перезапуск Caddy
+$COMPOSE restart caddy >/dev/null 2>&1 || true
 docker image prune -f >/dev/null 2>&1 || true
 echo "[$(date -Is)] Готово"

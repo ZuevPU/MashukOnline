@@ -24,6 +24,7 @@ export function ApplicationForm({ config }: { config: FormConfig }) {
   const [files, setFiles] = useState<Record<string, File | null>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [step, setStep] = useState(1);
+  const [honeypot, setHoneypot] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
   const [message, setMessage] = useState("");
 
@@ -126,6 +127,7 @@ export function ApplicationForm({ config }: { config: FormConfig }) {
     setMessage("");
     const formData = new FormData();
     formData.append("payload", JSON.stringify(buildPayload()));
+    formData.append("__hp", honeypot);
     for (const [name, file] of Object.entries(files)) {
       if (file) formData.append(name, file);
     }
@@ -261,6 +263,18 @@ export function ApplicationForm({ config }: { config: FormConfig }) {
             void submit();
           }}
         >
+          <div className="pointer-events-none absolute top-0 left-[-9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
+            <label htmlFor="__hp">Не заполняйте это поле</label>
+            <input
+              id="__hp"
+              name="__hp"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              value={honeypot}
+              onChange={(event) => setHoneypot(event.target.value)}
+            />
+          </div>
           {stepCount ? (
             <>
               <ol className="mb-4 flex gap-2">

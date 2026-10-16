@@ -13,6 +13,7 @@ Dockerfile
 Dockerfile.*
 docker-compose*.yml
 deploy
+assets
 public/uploads
 !public/uploads/README.txt
 

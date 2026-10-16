@@ -1,21 +1,27 @@
 import type { MetadataRoute } from "next";
-import { getAllPrograms } from "@/lib/data";
+import { siteUrl } from "@/lib/site-url";
 
-/** Карта сайта: главная и страницы программ. */
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = process.env.PUBLIC_URL?.replace(/\/$/, "") || "https://109.71.247.90.sslip.io";
-  const programs = await getAllPrograms();
+/** Публичные страницы портала. Программы сопровождения — динамические, не индексируются списком. */
+const PAGES: { path: string; priority: number; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"] }[] = [
+  { path: "", priority: 1, changeFrequency: "daily" },
+  { path: "/courses", priority: 0.9, changeFrequency: "weekly" },
+  { path: "/events/seminar", priority: 0.8, changeFrequency: "weekly" },
+  { path: "/events/media", priority: 0.8, changeFrequency: "weekly" },
+  { path: "/apply", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/info", priority: 0.5, changeFrequency: "monthly" },
+  { path: "/muni", priority: 0.5, changeFrequency: "monthly" },
+  { path: "/privacy", priority: 0.3, changeFrequency: "yearly" },
+];
 
-  return [
-    {
-      url: `${base}/`,
-      changeFrequency: "daily",
-      priority: 1,
-    },
-    ...programs.map((program) => ({
-      url: `${base}/programs/${program.slug}`,
-      changeFrequency: "weekly" as const,
-      priority: 0.7,
-    })),
-  ];
+export const dynamic = "force-dynamic";
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  const base = siteUrl();
+  const now = new Date();
+  return PAGES.map((page) => ({
+    url: `${base}${page.path}`,
+    lastModified: now,
+    changeFrequency: page.changeFrequency,
+    priority: page.priority,
+  }));
 }

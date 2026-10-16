@@ -44,7 +44,6 @@ export function CourseCard({ course }: { course: Course }) {
             src={course.image}
             alt={course.title}
             fill
-            unoptimized
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover"
           />

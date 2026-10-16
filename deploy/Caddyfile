@@ -15,6 +15,12 @@ www.{$DOMAIN} {
 {$DOMAIN} {
 	encode zstd gzip
 
+	# Долгий кэш неизменяемой статики Next и наших медиафайлов
+	@nextstatic path /_next/static/*
+	header @nextstatic Cache-Control "public, max-age=31536000, immutable"
+	@media path /courses/* /brand/* /uploads/*
+	header @media Cache-Control "public, max-age=604800"
+
 	# Grafana доступна по адресу https://{$DOMAIN}/grafana/
 	handle /grafana/* {
 		reverse_proxy grafana:3000
@@ -32,6 +38,9 @@ www.{$DOMAIN} {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		X-Content-Type-Options "nosniff"
 		Referrer-Policy "strict-origin-when-cross-origin"
+		X-Frame-Options "SAMEORIGIN"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://mc.yandex.ru; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://mc.yandex.ru; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
 		-Server
 	}
 

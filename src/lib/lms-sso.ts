@@ -17,6 +17,8 @@
  *   LMS_OAUTH_REDIRECT_URI    явный redirect_uri (необязательно; для туннеля)
  */
 
+import { siteUrl } from "./site-url";
+
 export function lmsConfigured(): boolean {
   return Boolean(
     (process.env.LMS_OAUTH_AUTHORIZE_URL ?? "").trim() &&
@@ -27,8 +29,7 @@ export function lmsConfigured(): boolean {
 export function redirectUri(origin: string): string {
   const explicit = (process.env.LMS_OAUTH_REDIRECT_URI ?? "").trim();
   if (explicit) return explicit;
-  const base = ((process.env.PUBLIC_URL ?? "").trim() || origin).replace(/\/+$/, "");
-  return `${base}/api/auth/sso/lms/callback`;
+  return `${siteUrl(origin)}/api/auth/sso/lms/callback`;
 }
 
 export function authorizeUrl(origin: string, state: string): string | null {

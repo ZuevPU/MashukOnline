@@ -1,6 +1,7 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { getDb, schema } from "./db/client";
 import { eq } from "drizzle-orm";
+import { isHttpUrl, siteUrl } from "./site-url";
 
 /**
  * Портал как OAuth 2.0 / OpenID Connect провайдер (единый вход для LMS).
@@ -27,9 +28,8 @@ export interface OAuthConfig {
 }
 
 export function oauthConfig(): OAuthConfig {
-  const issuer = (process.env.OAUTH_ISSUER || process.env.PUBLIC_URL || "https://mashuk.online")
-    .trim()
-    .replace(/\/+$/, "");
+  const issuerRaw = (process.env.OAUTH_ISSUER ?? "").trim();
+  const issuer = isHttpUrl(issuerRaw) ? new URL(issuerRaw).origin : siteUrl();
   return {
     issuer,
     clientId: (process.env.OAUTH_CLIENT_ID ?? "").trim(),

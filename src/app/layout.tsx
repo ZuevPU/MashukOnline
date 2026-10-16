@@ -4,10 +4,11 @@ import { geologica, notoSerif } from "@/lib/fonts";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { BRAND } from "@/lib/brand";
+import { siteUrl } from "@/lib/site-url";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.PUBLIC_URL || "https://109.71.247.90.sslip.io"),
+  metadataBase: new URL(siteUrl()),
   title: {
     default: "Программы Центра знаний «Машук»",
     template: "%s — Центр знаний «Машук»",

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Машук">
+  <rect width="64" height="64" rx="12" fill="#223F9A"/>
+  <circle cx="46" cy="17" r="6" fill="#54A4DB"/>
+  <path d="M4 52 L20 22 L28 36 L40 16 L60 52 Z" fill="#ffffff"/>
+</svg>

@@ -74,3 +74,24 @@ https://xxx.twc1.net/api/auth/sso/lms/callback
 Загруженные файлы лежат в `./storage` (или S3, если задан `S3_*`). На
 Timeweb Apps файловая система между деплоями может не сохраняться — для
 рабочего контура подключите **S3-совместимое хранилище** или том.
+
+## Обновление на VPS
+
+Образы собираются в GitHub Actions и публикуются в `ghcr.io/zuevpu/mashukonline`.
+На сервере обновление — пуллом готового образа (без сборки на сервере):
+
+```bash
+cd /opt/mashuk
+git pull
+docker compose --env-file .env pull app
+docker compose --env-file .env up -d
+docker compose --env-file .env restart caddy   # если менялся Caddyfile
+```
+
+## Резервные копии (cron)
+
+```cron
+30 3 * * * cd /opt/mashuk && ./deploy/backup.sh >> /var/log/mashuk-backup.log 2>&1
+```
+
+Дампы базы и архивы файлов кладутся в `/var/backups/mashuk` и хранятся 7 дней.

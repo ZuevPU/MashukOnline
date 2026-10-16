@@ -43,9 +43,9 @@ export function normalizeDatabaseUrl(raw: string | undefined): string | undefine
   try {
     const parsed = new URL(value);
     const host = parsed.hostname;
-    // Хост — только латиница, цифры, точки и дефисы; иначе это заглушка/текст.
-    if (!host || !/^[a-z0-9.-]+$/i.test(host)) return undefined;
-    if (!host.includes(".") && host !== "localhost") return undefined;
+    // Хост — только латиница, цифры, точки и дефисы. Так отсекаются заглушки
+    // вида «postgres://…», но допускаются короткие имена (например, db в Docker).
+    if (!host || !/^[a-z0-9.-]+$/i.test(host) || /^[.-]+$/.test(host)) return undefined;
   } catch {
     return undefined;
   }

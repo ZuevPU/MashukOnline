@@ -121,7 +121,6 @@ export function ApplicationForm({ config }: { config: FormConfig }) {
   }
 
   async function submit() {
-    if (stepCount && !validateStep(stepCount)) return;
     if (!validateStep(stepCount)) return;
     setStatus("sending");
     setMessage("");
@@ -142,6 +141,35 @@ export function ApplicationForm({ config }: { config: FormConfig }) {
     } catch {
       setStatus("error");
       setMessage("Не удалось отправить заявку. Попробуйте ещё раз.");
+    }
+  }
+
+  async function downloadWithData() {
+    if (!config.consents) return;
+    try {
+      const response = await fetch("/api/forms/consent", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ kind: config.consents.kind, data: buildPayload() }),
+      });
+      if (!response.ok) {
+        setMessage("Не удалось подготовить документ.");
+        return;
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download =
+        config.consents.kind === "apply-doc"
+          ? "Soglasie_Obrazovanie_na_vysote.doc"
+          : "Soglasie_uchastnika.pdf";
+      document.body.append(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+    } catch {
+      setMessage("Не удалось подготовить документ.");
     }
   }
 
@@ -303,9 +331,18 @@ export function ApplicationForm({ config }: { config: FormConfig }) {
                       href={`/api/forms/consent?kind=${config.consents.kind}`}
                     >
                       {config.consents.kind === "apply-doc"
-                        ? "Скачать шаблон согласия (Word)"
+                        ? "Скачать пустой шаблон (Word)"
                         : "Скачать пустой бланк PDF"}
                     </a>
+                    <button
+                      type="button"
+                      onClick={() => void downloadWithData()}
+                      className="inline-flex min-h-10 items-center rounded-full bg-gold px-4 text-meta font-semibold text-white hover:-translate-y-px"
+                    >
+                      {config.consents.kind === "apply-doc"
+                        ? "Скачать Word с данными анкеты"
+                        : "Скачать PDF с моими данными"}
+                    </button>
                   </div>
                 </div>
               </div>

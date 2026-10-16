@@ -32,7 +32,13 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       <div className="border-b border-[var(--line)] bg-white">
         <div className="flex min-h-14 flex-wrap items-center gap-x-6 gap-y-2 px-4 py-2 text-meta md:px-8">
           <Link href="/admin" className="font-display text-lead font-semibold tracking-[-0.02em] text-navy no-underline">
-            Управление программами
+            Программы
+          </Link>
+          <Link
+            href="/admin/applications"
+            className="font-semibold text-navy no-underline hover:underline"
+          >
+            Заявки
           </Link>
           <span className="text-ink-faint">
             {user.member.name}

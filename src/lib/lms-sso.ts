@@ -14,6 +14,7 @@
  *   LMS_OAUTH_CLIENT_SECRET   секретный ключ приложения
  *   LMS_OAUTH_SCOPE           область доступа (необязательно)
  *   PUBLIC_URL                базовый адрес портала (для redirect_uri)
+ *   LMS_OAUTH_REDIRECT_URI    явный redirect_uri (необязательно; для туннеля)
  */
 
 export function lmsConfigured(): boolean {
@@ -24,6 +25,8 @@ export function lmsConfigured(): boolean {
 }
 
 export function redirectUri(origin: string): string {
+  const explicit = (process.env.LMS_OAUTH_REDIRECT_URI ?? "").trim();
+  if (explicit) return explicit;
   const base = ((process.env.PUBLIC_URL ?? "").trim() || origin).replace(/\/+$/, "");
   return `${base}/api/auth/sso/lms/callback`;
 }

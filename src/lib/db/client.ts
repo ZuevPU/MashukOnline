@@ -26,9 +26,34 @@ export type Database = ReturnType<typeof createDb>;
 
 let cached: Database | null = null;
 
+/**
+ * Приводит DATABASE_URL к пригодному виду.
+ *
+ * В переменную часто вставляют строку-заглушку или команду `psql …` со скобками
+ * и лишним текстом. Достаём из неё сам адрес postgres://… и проверяем синтаксис;
+ * если адрес некорректен — базы «нет», приложение работает в демонстрационном
+ * режиме и сборка не падает.
+ */
+export function normalizeDatabaseUrl(raw: string | undefined): string | undefined {
+  let value = (raw ?? "").trim().replace(/^['"]+|['"]+$/g, "");
+  if (!value) return undefined;
+  const found = value.match(/postgres(?:ql)?:\/\/\S+/i);
+  if (found) value = found[0].replace(/['";,]+$/, "");
+  if (!/^postgres(?:ql)?:\/\//i.test(value)) return undefined;
+  try {
+    const parsed = new URL(value);
+    const host = parsed.hostname;
+    // Хост — только латиница, цифры, точки и дефисы; иначе это заглушка/текст.
+    if (!host || !/^[a-z0-9.-]+$/i.test(host)) return undefined;
+    if (!host.includes(".") && host !== "localhost") return undefined;
+  } catch {
+    return undefined;
+  }
+  return value;
+}
+
 export function databaseUrl(): string | undefined {
-  const url = process.env.DATABASE_URL?.trim();
-  return url ? url : undefined;
+  return normalizeDatabaseUrl(process.env.DATABASE_URL);
 }
 
 export function hasDatabase(): boolean {

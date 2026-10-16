@@ -20,6 +20,8 @@ const ADVANTAGES = [
   },
 ];
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const programs = await getAllPrograms();
   const stats = getShowcaseStats(programs);

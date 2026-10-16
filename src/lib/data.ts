@@ -29,11 +29,25 @@ function mockPrograms(): ProgramView[] {
 }
 
 export async function getAllPrograms(): Promise<ProgramView[]> {
-  return hasDatabase() ? loadPrograms() : mockPrograms();
+  if (hasDatabase()) {
+    try {
+      return await loadPrograms();
+    } catch {
+      // База недоступна (например, на этапе сборки) — показываем демонстрационные данные
+    }
+  }
+  return mockPrograms();
 }
 
 export async function getProgram(slug: string): Promise<ProgramView | undefined> {
-  if (hasDatabase()) return loadProgram(slug);
+  if (hasDatabase()) {
+    try {
+      const loaded = await loadProgram(slug);
+      if (loaded) return loaded;
+    } catch {
+      // см. выше
+    }
+  }
   const found = PROGRAMS.find((program) => program.slug === slug);
   return found ? toView(found) : undefined;
 }

@@ -1,0 +1,27 @@
+#cloud-config
+# Первичная настройка сервера под портал «Машук» (Ubuntu 22.04/24.04/26.04).
+# Вставьте этот скрипт в поле «Cloud-init» при создании сервера.
+# Ставит Docker и Compose, добавляет swap 2 ГБ (нужно для сборки образа на
+# сервере с 2 ГБ RAM) и создаёт каталог проекта.
+
+package_update: true
+package_upgrade: false
+
+packages:
+  - docker.io
+  - docker-compose-v2
+  - git
+  - ca-certificates
+  - curl
+
+write_files:
+  - path: /etc/sysctl.d/99-swap.conf
+    content: |
+      vm.swappiness=10
+
+runcmd:
+  - [ sh, -c, "test -f /swapfile || (fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile && echo '/swapfile none swap sw 0 0' >> /etc/fstab)" ]
+  - [ systemctl, enable, --now, docker ]
+  - [ usermod, -aG, docker, ubuntu ]
+  - [ mkdir, -p, /opt/mashuk ]
+  - [ sh, -c, "echo 'Готово: Docker установлен. Дальше: git clone, .env, docker compose up -d' > /root/setup-done.txt" ]

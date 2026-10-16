@@ -1,0 +1,142 @@
+CREATE TABLE "municipal_applications" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"program_id" integer,
+	"deleted_at" timestamp with time zone,
+	"payload_raw" jsonb,
+	"fio" text NOT NULL,
+	"federal_district" text,
+	"region" text,
+	"city" text,
+	"workplace" text,
+	"position" text,
+	"birth_date" text,
+	"snils" text,
+	"inn" text,
+	"phone" text,
+	"email" text,
+	"stream" text,
+	"colleagues" text,
+	"address" text,
+	"passport_series" text,
+	"passport_number" text,
+	"passport_issued" text,
+	"consent_path" text
+);
+--> statement-breakpoint
+CREATE TABLE "participant_details" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"program_id" integer,
+	"deleted_at" timestamp with time zone,
+	"payload_raw" jsonb,
+	"fio_latin" text NOT NULL,
+	"gender" text,
+	"citizenship" text,
+	"other_citizenships" text,
+	"other_citizenships_detail" text,
+	"health_limits" text,
+	"allergies" text,
+	"allergies_detail" text,
+	"health_conditions" text,
+	"health_conditions_detail" text,
+	"meal_type" text,
+	"meal_type_other" text,
+	"id_doc_type" text,
+	"id_doc_type_other" text,
+	"id_doc_series" text,
+	"id_doc_number" text,
+	"id_doc_issued" text,
+	"id_doc_valid_from" text,
+	"id_doc_valid_to" text,
+	"id_doc_issuer" text,
+	"entry_doc_name" text,
+	"entry_doc_series" text,
+	"entry_doc_number" text,
+	"entry_doc_issued" text,
+	"entry_doc_valid_from" text,
+	"entry_doc_valid_to" text,
+	"entry_doc_issuer" text,
+	"stream" text,
+	"depart_country" text,
+	"depart_city" text,
+	"return_ticket" text,
+	"baggage" text,
+	"visa_needed" text,
+	"visa_current" text,
+	"visa_status" text,
+	"transit_visa" text,
+	"agree_tickets" text,
+	"agree_participate" text,
+	"agree_notice" text,
+	"agree_truth" text,
+	"agree_extra_docs" text,
+	"agree_refusal" text,
+	"agree_logistics_city" text,
+	"agree_logistics_fixed" text,
+	"agree_logistics_change" text,
+	"passport_scan_path" text
+);
+--> statement-breakpoint
+CREATE TABLE "seminar_applications" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"program_id" integer,
+	"deleted_at" timestamp with time zone,
+	"payload_raw" jsonb,
+	"program" text,
+	"fio_latin" text NOT NULL,
+	"fio_ru" text,
+	"birth_date" text,
+	"gender" text,
+	"country" text,
+	"city" text,
+	"arrival" text,
+	"citizenship" text,
+	"all_citizenships" text,
+	"phone" text,
+	"email" text,
+	"messenger" jsonb,
+	"messenger_link" text,
+	"messenger_other" text,
+	"org_name" text,
+	"org_spec" text,
+	"org_location" text,
+	"position" text,
+	"audience" jsonb,
+	"audience_other" text,
+	"stream" text,
+	"how_learned" text,
+	"intl_programs" text,
+	"intl_details" text,
+	"ru_programs" text,
+	"ru_details" text,
+	"why" text,
+	"coop" text,
+	"mentor" text,
+	"directions" jsonb,
+	"directions_other" text,
+	"address" text,
+	"passport_series" text,
+	"passport_number" text,
+	"passport_date" text,
+	"passport_issued" text,
+	"portfolio_path" text,
+	"consent_path" text
+);
+--> statement-breakpoint
+ALTER TABLE "municipal_applications" ADD CONSTRAINT "municipal_applications_program_id_programs_id_fk" FOREIGN KEY ("program_id") REFERENCES "public"."programs"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "participant_details" ADD CONSTRAINT "participant_details_program_id_programs_id_fk" FOREIGN KEY ("program_id") REFERENCES "public"."programs"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "seminar_applications" ADD CONSTRAINT "seminar_applications_program_id_programs_id_fk" FOREIGN KEY ("program_id") REFERENCES "public"."programs"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "municipal_applications_created_idx" ON "municipal_applications" USING btree ("created_at");--> statement-breakpoint
+CREATE INDEX "municipal_applications_email_idx" ON "municipal_applications" USING btree ("email");--> statement-breakpoint
+CREATE INDEX "municipal_applications_program_idx" ON "municipal_applications" USING btree ("program_id");--> statement-breakpoint
+CREATE INDEX "municipal_applications_deleted_idx" ON "municipal_applications" USING btree ("deleted_at");--> statement-breakpoint
+CREATE INDEX "participant_details_created_idx" ON "participant_details" USING btree ("created_at");--> statement-breakpoint
+CREATE INDEX "participant_details_program_idx" ON "participant_details" USING btree ("program_id");--> statement-breakpoint
+CREATE INDEX "participant_details_stream_idx" ON "participant_details" USING btree ("stream");--> statement-breakpoint
+CREATE INDEX "participant_details_deleted_idx" ON "participant_details" USING btree ("deleted_at");--> statement-breakpoint
+CREATE INDEX "seminar_applications_created_idx" ON "seminar_applications" USING btree ("created_at");--> statement-breakpoint
+CREATE INDEX "seminar_applications_email_idx" ON "seminar_applications" USING btree ("email");--> statement-breakpoint
+CREATE INDEX "seminar_applications_program_idx" ON "seminar_applications" USING btree ("program_id");--> statement-breakpoint
+CREATE INDEX "seminar_applications_deleted_idx" ON "seminar_applications" USING btree ("deleted_at");

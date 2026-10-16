@@ -421,3 +421,168 @@ export const authSessions = pgTable(
   (table) => [index("auth_sessions_member_idx").on(table.memberId)],
 );
 
+/* ==========================================================================
+   Заявки: формы семинара, данные участников, муниципалитеты
+
+   Каждая заявка может быть привязана к программе (program_id) — для семинара
+   это конкретный поток. Поля хранятся текстом (как приходили из форм), а
+   исходная анкета целиком — в payload_raw. Удаление мягкое (deleted_at).
+   ========================================================================== */
+
+/** Общие колонки заявок. Функция, чтобы у каждой таблицы были свои билдеры. */
+function applicationBase() {
+  return {
+    id: serial("id").primaryKey(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    /** Программа, к которой относится заявка (поток семинара и т.п.) */
+    programId: integer("program_id").references(() => programs.id, {
+      onDelete: "set null",
+    }),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
+    /** Исходная анкета как пришла из формы */
+    payloadRaw: jsonb("payload_raw").$type<Record<string, unknown>>(),
+  };
+}
+
+export const seminarApplications = pgTable(
+  "seminar_applications",
+  {
+    ...applicationBase(),
+    program: text("program"),
+    fioLatin: text("fio_latin").notNull(),
+    fioRu: text("fio_ru"),
+    birthDate: text("birth_date"),
+    gender: text("gender"),
+    country: text("country"),
+    city: text("city"),
+    arrival: text("arrival"),
+    citizenship: text("citizenship"),
+    allCitizenships: text("all_citizenships"),
+    phone: text("phone"),
+    email: text("email"),
+    messenger: jsonb("messenger").$type<string[]>(),
+    messengerLink: text("messenger_link"),
+    messengerOther: text("messenger_other"),
+    orgName: text("org_name"),
+    orgSpec: text("org_spec"),
+    orgLocation: text("org_location"),
+    position: text("position"),
+    audience: jsonb("audience").$type<string[]>(),
+    audienceOther: text("audience_other"),
+    stream: text("stream"),
+    howLearned: text("how_learned"),
+    intlPrograms: text("intl_programs"),
+    intlDetails: text("intl_details"),
+    ruPrograms: text("ru_programs"),
+    ruDetails: text("ru_details"),
+    why: text("why"),
+    coop: text("coop"),
+    mentor: text("mentor"),
+    directions: jsonb("directions").$type<string[]>(),
+    directionsOther: text("directions_other"),
+    address: text("address"),
+    passportSeries: text("passport_series"),
+    passportNumber: text("passport_number"),
+    passportDate: text("passport_date"),
+    passportIssued: text("passport_issued"),
+    portfolioPath: text("portfolio_path"),
+    consentPath: text("consent_path"),
+  },
+  (table) => [
+    index("seminar_applications_created_idx").on(table.createdAt),
+    index("seminar_applications_email_idx").on(table.email),
+    index("seminar_applications_program_idx").on(table.programId),
+    index("seminar_applications_deleted_idx").on(table.deletedAt),
+  ],
+);
+
+export const participantDetails = pgTable(
+  "participant_details",
+  {
+    ...applicationBase(),
+    fioLatin: text("fio_latin").notNull(),
+    gender: text("gender"),
+    citizenship: text("citizenship"),
+    otherCitizenships: text("other_citizenships"),
+    otherCitizenshipsDetail: text("other_citizenships_detail"),
+    healthLimits: text("health_limits"),
+    allergies: text("allergies"),
+    allergiesDetail: text("allergies_detail"),
+    healthConditions: text("health_conditions"),
+    healthConditionsDetail: text("health_conditions_detail"),
+    mealType: text("meal_type"),
+    mealTypeOther: text("meal_type_other"),
+    idDocType: text("id_doc_type"),
+    idDocTypeOther: text("id_doc_type_other"),
+    idDocSeries: text("id_doc_series"),
+    idDocNumber: text("id_doc_number"),
+    idDocIssued: text("id_doc_issued"),
+    idDocValidFrom: text("id_doc_valid_from"),
+    idDocValidTo: text("id_doc_valid_to"),
+    idDocIssuer: text("id_doc_issuer"),
+    entryDocName: text("entry_doc_name"),
+    entryDocSeries: text("entry_doc_series"),
+    entryDocNumber: text("entry_doc_number"),
+    entryDocIssued: text("entry_doc_issued"),
+    entryDocValidFrom: text("entry_doc_valid_from"),
+    entryDocValidTo: text("entry_doc_valid_to"),
+    entryDocIssuer: text("entry_doc_issuer"),
+    stream: text("stream"),
+    departCountry: text("depart_country"),
+    departCity: text("depart_city"),
+    returnTicket: text("return_ticket"),
+    baggage: text("baggage"),
+    visaNeeded: text("visa_needed"),
+    visaCurrent: text("visa_current"),
+    visaStatus: text("visa_status"),
+    transitVisa: text("transit_visa"),
+    agreeTickets: text("agree_tickets"),
+    agreeParticipate: text("agree_participate"),
+    agreeNotice: text("agree_notice"),
+    agreeTruth: text("agree_truth"),
+    agreeExtraDocs: text("agree_extra_docs"),
+    agreeRefusal: text("agree_refusal"),
+    agreeLogisticsCity: text("agree_logistics_city"),
+    agreeLogisticsFixed: text("agree_logistics_fixed"),
+    agreeLogisticsChange: text("agree_logistics_change"),
+    passportScanPath: text("passport_scan_path"),
+  },
+  (table) => [
+    index("participant_details_created_idx").on(table.createdAt),
+    index("participant_details_program_idx").on(table.programId),
+    index("participant_details_stream_idx").on(table.stream),
+    index("participant_details_deleted_idx").on(table.deletedAt),
+  ],
+);
+
+export const municipalApplications = pgTable(
+  "municipal_applications",
+  {
+    ...applicationBase(),
+    fio: text("fio").notNull(),
+    federalDistrict: text("federal_district"),
+    region: text("region"),
+    city: text("city"),
+    workplace: text("workplace"),
+    position: text("position"),
+    birthDate: text("birth_date"),
+    snils: text("snils"),
+    inn: text("inn"),
+    phone: text("phone"),
+    email: text("email"),
+    stream: text("stream"),
+    colleagues: text("colleagues"),
+    address: text("address"),
+    passportSeries: text("passport_series"),
+    passportNumber: text("passport_number"),
+    passportIssued: text("passport_issued"),
+    consentPath: text("consent_path"),
+  },
+  (table) => [
+    index("municipal_applications_created_idx").on(table.createdAt),
+    index("municipal_applications_email_idx").on(table.email),
+    index("municipal_applications_program_idx").on(table.programId),
+    index("municipal_applications_deleted_idx").on(table.deletedAt),
+  ],
+);
+

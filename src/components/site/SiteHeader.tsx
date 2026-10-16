@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { ButtonLink } from "@/components/ui/Button";
 import { getSessionUser } from "@/lib/auth";
+import { lmsConfigured } from "@/lib/lms-sso";
 
 const NAV = [
   { href: "https://центрзнаниймашук.рф/", label: "О Центре", external: true },
@@ -90,6 +91,14 @@ export async function SiteHeader() {
           <span className="hidden md:flex">
             <Social />
           </span>
+          {!user && lmsConfigured() ? (
+            <a
+              href="/api/auth/sso/lms/start"
+              className="hidden text-meta font-semibold text-navy no-underline hover:underline sm:inline"
+            >
+              Войти через LMS
+            </a>
+          ) : null}
           <ButtonLink href={action.href} size="sm">
             Кабинет
           </ButtonLink>

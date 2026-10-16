@@ -64,7 +64,7 @@ export interface FormFact {
 }
 
 export interface FormConfig {
-  id: "apply" | "info" | "muni";
+  id: "apply" | "info" | "muni" | "media";
   endpoint: string;
   kicker?: string;
   title: string;

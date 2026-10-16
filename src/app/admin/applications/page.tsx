@@ -18,6 +18,7 @@ const LABELS: Record<string, string> = {
   country: "Страна",
   stream: "Поток",
   region: "Регион",
+  org: "Организация",
 };
 
 interface PageProps {
@@ -88,7 +89,7 @@ export default async function ApplicationsPage({ searchParams }: PageProps) {
       </div>
 
       <nav className="flex flex-wrap gap-2">
-        {(["apply", "info", "muni"] as FormId[]).map((id) => (
+        {(["apply", "info", "muni", "media"] as FormId[]).map((id) => (
           <Link
             key={id}
             href={buildQuery(form, sp, { form: id, page: "" })}

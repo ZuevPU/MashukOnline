@@ -586,3 +586,33 @@ export const municipalApplications = pgTable(
   ],
 );
 
+export const mediaApplications = pgTable(
+  "media_applications",
+  {
+    ...applicationBase(),
+    fio: text("fio").notNull(),
+    birthDate: text("birth_date"),
+    country: text("country"),
+    city: text("city"),
+    email: text("email"),
+    phone: text("phone"),
+    messenger: jsonb("messenger").$type<string[]>(),
+    messengerLink: text("messenger_link"),
+    orgName: text("org_name"),
+    position: text("position"),
+    mediaType: jsonb("media_type").$type<string[]>(),
+    mediaTypeOther: text("media_type_other"),
+    stream: text("stream"),
+    links: text("links"),
+    why: text("why"),
+    agreeTruth: text("agree_truth"),
+    agreeConsent: text("agree_consent"),
+  },
+  (table) => [
+    index("media_applications_created_idx").on(table.createdAt),
+    index("media_applications_email_idx").on(table.email),
+    index("media_applications_program_idx").on(table.programId),
+    index("media_applications_deleted_idx").on(table.deletedAt),
+  ],
+);
+

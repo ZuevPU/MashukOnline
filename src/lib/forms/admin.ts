@@ -6,7 +6,7 @@ import { getDb, schema } from "../db/client";
  * Три формы — семинар (apply), данные участников (info), муниципалитеты (muni).
  */
 
-export type FormId = "apply" | "info" | "muni";
+export type FormId = "apply" | "info" | "muni" | "media";
 
 export interface AppFilters {
   q: string;
@@ -25,6 +25,7 @@ const SORTABLE: Record<FormId, Record<string, string>> = {
   apply: { created_at: "createdAt", fio: "fioLatin", email: "email", stream: "stream", country: "country" },
   info: { created_at: "createdAt", fio: "fioLatin", stream: "stream", country: "departCountry" },
   muni: { created_at: "createdAt", fio: "fio", email: "email", stream: "stream", region: "region" },
+  media: { created_at: "createdAt", fio: "fio", email: "email", stream: "stream", country: "country" },
 };
 
 export const FORM_META: Record<
@@ -133,10 +134,32 @@ export const FORM_META: Record<
       { key: "consent_path", title: "Согласие (файл)" },
     ],
   },
+  media: {
+    label: "Медиакомпетенции",
+    short: "Медиа",
+    fileColumns: [],
+    excel: [
+      { key: "id", title: "ID" },
+      { key: "created_at", title: "Дата подачи" },
+      { key: "fio", title: "ФИО" },
+      { key: "birth_date", title: "Дата рождения" },
+      { key: "country", title: "Страна" },
+      { key: "city", title: "Город" },
+      { key: "email", title: "E-mail" },
+      { key: "phone", title: "Телефон" },
+      { key: "messenger", title: "Мессенджер" },
+      { key: "org_name", title: "Издание / организация" },
+      { key: "position", title: "Должность" },
+      { key: "media_type", title: "Сфера деятельности" },
+      { key: "stream", title: "Даты участия" },
+      { key: "links", title: "Материалы и портфолио" },
+      { key: "why", title: "Мотивация" },
+    ],
+  },
 };
 
 export function isFormId(value: string): value is FormId {
-  return value === "apply" || value === "info" || value === "muni";
+  return value === "apply" || value === "info" || value === "muni" || value === "media";
 }
 
 function intParam(raw: unknown, fallback: number, lo: number, hi: number): number {
@@ -198,6 +221,12 @@ const SUMMARY: Record<FormId, { key: string; column: string }[]> = {
     { key: "email", column: "email" },
     { key: "region", column: "region" },
   ],
+  media: [
+    { key: "fio", column: "fio" },
+    { key: "email", column: "email" },
+    { key: "org", column: "orgName" },
+    { key: "stream", column: "stream" },
+  ],
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -206,7 +235,8 @@ type AnyTable = any;
 function table(form: FormId): AnyTable {
   if (form === "apply") return schema.seminarApplications;
   if (form === "info") return schema.participantDetails;
-  return schema.municipalApplications;
+  if (form === "muni") return schema.municipalApplications;
+  return schema.mediaApplications;
 }
 
 /** drizzle отдаёт ключи в camelCase — приводим к snake_case как в описаниях форм. */
@@ -223,7 +253,8 @@ function snakeRow(row: Record<string, unknown>): Record<string, unknown> {
 function searchColumns(form: FormId): string[] {
   if (form === "apply") return ["fio_latin", "fio_ru", "email", "phone", "country", "city", "org_name", "citizenship"];
   if (form === "info") return ["fio_latin", "citizenship", "depart_country", "depart_city", "stream"];
-  return ["fio", "email", "phone", "region", "city", "workplace", "federal_district", "position"];
+  if (form === "muni") return ["fio", "email", "phone", "region", "city", "workplace", "federal_district", "position"];
+  return ["fio", "email", "phone", "org_name", "city", "country", "position"];
 }
 
 export async function listApplications(form: FormId, f: AppFilters): Promise<ListResult> {

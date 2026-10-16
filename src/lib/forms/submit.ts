@@ -5,6 +5,7 @@ import { validEmail, validInn, validRegion, validSnils, normalizeDistrict } from
 import { applyConfig } from "./apply-config";
 import { infoConfig } from "./info-config";
 import { muniConfig } from "./muni-config";
+import { mediaConfig } from "./media-config";
 import type { FormConfig } from "./types";
 
 /**
@@ -19,6 +20,7 @@ export const FORM_CONFIGS: Record<FormConfig["id"], FormConfig> = {
   apply: applyConfig,
   info: infoConfig,
   muni: muniConfig,
+  media: mediaConfig,
 };
 
 export class SubmitError extends Error {}
@@ -228,6 +230,35 @@ export async function submitForm(
     return { id: rows[0].id };
   }
 
+  if (id === "media") {
+    await validateMedia(data);
+    const rows = await db
+      .insert(schema.mediaApplications)
+      .values({
+        programId,
+        fio: str(data, "fio", 200),
+        birthDate: str(data, "birth_date", 20) || null,
+        country: str(data, "country", 120) || null,
+        city: str(data, "city", 120) || null,
+        email: str(data, "email", 254) || null,
+        phone: str(data, "phone", 40) || null,
+        messenger: list(data, "messenger"),
+        messengerLink: str(data, "messenger_link", 300) || null,
+        orgName: str(data, "org_name", 300) || null,
+        position: str(data, "position", 200) || null,
+        mediaType: list(data, "media_type"),
+        mediaTypeOther: str(data, "media_type_other", 200) || null,
+        stream: str(data, "stream", 120) || null,
+        links: str(data, "links", 2000) || null,
+        why: str(data, "why") || null,
+        agreeTruth: yesNo(list(data, "agree_truth")[0]),
+        agreeConsent: yesNo(list(data, "agree_consent")[0]),
+        payloadRaw: data,
+      })
+      .returning({ id: schema.mediaApplications.id });
+    return { id: rows[0].id };
+  }
+
   // muni
   await validateMuni(data);
   const rows = await db
@@ -300,5 +331,12 @@ async function validateMuni(data: Record<string, unknown>): Promise<void> {
   if (!validRegion(str(data, "region"))) throw new SubmitError("Выберите регион из списка");
   if (!["Да", "да"].includes(str(data, "consent_confirm", 20))) {
     throw new SubmitError("Подтвердите подписание согласия");
+  }
+}
+
+async function validateMedia(data: Record<string, unknown>): Promise<void> {
+  if (!validEmail(str(data, "email"))) throw new SubmitError("Укажите корректный e-mail");
+  if (!list(data, "agree_truth").length || !list(data, "agree_consent").length) {
+    throw new SubmitError("Проставьте обязательные согласия");
   }
 }

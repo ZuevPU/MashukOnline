@@ -64,6 +64,13 @@
       "when": 1792138292626,
       "tag": "0008_nifty_karen_page",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1792140502155,
+      "tag": "0009_confused_jack_power",
+      "breakpoints": true
     }
   ]
 }

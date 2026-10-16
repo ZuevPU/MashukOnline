@@ -44,9 +44,9 @@ www.{$DOMAIN} {
 }
 
 # --- GlitchTip (трекер ошибок) ----------------------------------------------
-# Отдаётся на отдельном домене (ERRORS_DOMAIN, например errors.example.ru),
-# который задаётся в .env. Сервис glitchtip поднимается из
-# deploy/glitchtip/docker-compose.yml в той же сети.
-{$ERRORS_DOMAIN} {
-	reverse_proxy glitchtip:8000
-}
+# Опционально. Если поднимаете GlitchTip (deploy/glitchtip), задайте ERRORS_DOMAIN
+# в .env и раскомментируйте блок ниже. Пока ERRORS_DOMAIN пуст, блок должен быть
+# закомментирован — иначе Caddy получит сайт без адреса и не запустится.
+# {$ERRORS_DOMAIN} {
+# 	reverse_proxy glitchtip:8000
+# }

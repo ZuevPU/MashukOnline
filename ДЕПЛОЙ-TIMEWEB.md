@@ -34,9 +34,9 @@
    LMS_OAUTH_AUTHORIZE_URL=https://lms.mashuk.online/oauth/authorize
    LMS_OAUTH_TOKEN_URL=https://lms.mashuk.online/oauth/token
    LMS_OAUTH_USERINFO_URL=https://lms.mashuk.online/oauth/userinfo
-   LMS_OAUTH_CLIENT_ID=wDZKGbd5KHGiUF9KUaagwR9xzLFOBnVzy06fb-ngp5k
-   LMS_OAUTH_CLIENT_SECRET=O0kFMgihEWjAB7k8XJs_EGOImIBwpCMYzQMhP1Xv_-w
-   LMS_OAUTH_SCOPE=openid email profile
+   LMS_OAUTH_CLIENT_ID=<API публичный ключ из панели LMS>
+   LMS_OAUTH_CLIENT_SECRET=<API секретный ключ из панели LMS>
+   LMS_OAUTH_SCOPE="openid email profile"
    LMS_OAUTH_REDIRECT_URI=https://xxx.twc1.net/api/auth/sso/lms/callback
    ```
 6. **Миграции** (один раз, из консоли приложения):

@@ -9,6 +9,7 @@ pnpm-debug.log*
 .env
 .env*.local
 .env.deploy
+.env.production
 next-env.d.ts
 tsconfig.tsbuildinfo
 

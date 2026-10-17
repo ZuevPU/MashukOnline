@@ -47,7 +47,8 @@ export async function GET() {
 function storageDriver(): string {
   try {
     return blobStore().driver;
-  } catch (error) {
-    return error instanceof Error ? `ошибка: ${error.message}` : "ошибка";
+  } catch {
+    // Не раскрываем детали ошибки в публичном healthcheck
+    return "error";
   }
 }

@@ -369,6 +369,14 @@ export function ApplicationForm({ config }: { config: FormConfig }) {
             </p>
           ) : null}
 
+          <p className="mt-4 text-caption text-ink-soft">
+            Отправляя форму, вы подтверждаете согласие с{" "}
+            <a href="/privacy" className="font-semibold text-navy underline">
+              Политикой конфиденциальности
+            </a>
+            .
+          </p>
+
           <div className="mt-6 flex flex-col-reverse justify-between gap-3 sm:flex-row">
             {stepCount && step > 1 ? (
               <button

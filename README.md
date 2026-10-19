@@ -36,7 +36,7 @@
 src/              приложение Next.js (app, components, lib)
 drizzle/          схема и миграции базы
 public/brand      брендинг для рантайма (логотипы, иконки, маскот, шрифты)
-assets/brand-src  исходники брендинга (AI/PNG/SVG, шрифты)
+assets/brand-src  исходники брендинга (Illustrator/PNG/SVG, шрифты)
 docs/brand        руководство по фирменному стилю
 deploy/           Caddy, Postgres, бэкапы, CI-конфиги
 scripts/          сидинг, администратор, миграция данных

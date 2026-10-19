@@ -98,7 +98,28 @@ async function migrateTable(
 
   for (const row of rows) {
     const legacyId = String(row.id ?? "");
+    const legacyFiles = Object.fromEntries(
+      FILE_COLUMNS[table].filter((col) => row[col]).map((col) => [col, row[col]]),
+    );
+
     if (legacyId && existing.has(legacyId)) {
+      // Уже перенесено. Если появились файлы — дозаполняем пустые пути.
+      if (opts.uploadsDir) {
+        for (const [col, original] of Object.entries(legacyFiles)) {
+          const result = await importFile(opts.uploadsDir, original);
+          if (result.copied) {
+            await tgt`
+              update ${tgt(table)}
+              set ${tgt({ [col]: result.key })}
+              where payload_raw->>'_legacy_id' = ${legacyId}
+                and (${tgt(col)} is null or ${tgt(col)} = '')
+            `;
+            files += 1;
+          } else {
+            missingFiles += 1;
+          }
+        }
+      }
       skipped += 1;
       continue;
     }
@@ -125,6 +146,7 @@ async function migrateTable(
         : {};
     payload._legacy_id = legacyId;
     payload._legacy_source = "forms";
+    if (Object.keys(legacyFiles).length) payload._legacy_files = legacyFiles;
     record.payload_raw = payload;
 
     if (!DRY_RUN) {

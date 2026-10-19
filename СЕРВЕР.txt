@@ -1,0 +1,137 @@
+СЕРВЕР: ОБЪЁМЫ И РАЗВЁРТЫВАНИЕ
+================================
+
+Справка по ресурсам и развёртыванию портала. Данные — по текущему серверу
+Timeweb (на нём работает портал, он же станет mashuk.online).
+
+
+ТЕКУЩИЙ СЕРВЕР (как сейчас)
+--------------------------
+ОС:            Ubuntu 26.04.1 LTS
+CPU:           1 vCPU
+RAM:           1 ГБ + swap 2 ГБ
+Диск:          14 ГБ NVMe (занято ~6 ГБ, свободно ~7 ГБ после очистки)
+Docker:        29.1.3, Compose 2.40.3
+Домен:         HTTPS через Caddy (Let's Encrypt)
+
+Порты:
+  80/443  — Caddy (публичные: HTTPS, HTTP/2, HTTP/3)
+  22      — SSH
+  4321    — приложение (только внутри Docker-сети)
+  5432    — PostgreSQL (только внутри Docker-сети)
+
+
+ГДЕ РАЗВЁРНУТО СЕЙЧАС
+--------------------
+IP сервера:       45.144.220.15
+Тестовый адрес:   https://45.144.220.15.sslip.io
+Боевой домен:     https://mashuk.online (план)
+Каталог проекта:  /opt/mashuk
+Репозиторий:      github.com/ZuevPU/MashukOnline
+Образ:            ghcr.io/zuevpu/mashukonline:latest
+Переменные:       /opt/mashuk/.env
+Логи Caddy:       том mashuk_caddy_data -> /data/access.log
+Логи приложения:  docker compose logs app
+Бэкапы:           /var/backups/mashuk
+Firewall:         ufw, разрешены 22, 80, 443
+
+Администратор портала: admin@czmashuk.ru (пароль хранится в менеджере
+секретов, в репозиторий не пишется).
+
+
+РЕКОМЕНДУЕМЫЕ ОБЪЁМЫ
+--------------------
+Тест (как сейчас):              1 vCPU, 1 ГБ RAM + swap 2 ГБ, 20 ГБ диска
+Прод (рекомендуется):           2 vCPU, 2–4 ГБ RAM, 40–50 ГБ диска
+Прод + мониторинг (Grafana):    2–4 vCPU, 4 ГБ RAM, 50 ГБ диска
+
+Что занимает место:
+  База данных (604 заявки):     ~14 МБ
+  Тома приложения:              ~89 МБ
+  Файлы заявок (854 шт.):       ~0.5–3 ГБ
+  Образы и кэш Docker:          до 2–3 ГБ (чистятся)
+
+Итого 40–50 ГБ диска закрывают базу, файлы, образы и бэкапы с запасом.
+
+
+СЕРВИСЫ (docker compose)
+------------------------
+app     Next.js (SSR): сайт, формы, админка, платформа   порт 4321 (внутри)
+db      PostgreSQL 18                                    порт 5432 (внутри)
+caddy   TLS и проксирование                              порты 80/443 (публично)
+tools   одноразовые команды: миграции, сидинг, перенос   —
+
+
+ПОСТОЯННЫЕ ТОМА
+---------------
+mashuk_pg_data       база PostgreSQL                       77 МБ
+mashuk_storage       файлы заявок и авторские сборки       растёт с заявками
+mashuk_uploads       фото из чатов                         12 КБ
+mashuk_caddy_data    сертификаты TLS                       9 МБ
+mashuk_caddy_config  конфиг Caddy                          16 КБ
+
+Тома переживают обновления образа. Без них файлы и база потеряются при
+пересоздании контейнеров.
+
+
+ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ (минимум)
+-----------------------------
+DOMAIN=mashuk.online
+ACME_EMAIL=admin@czmashuk.ru
+POSTGRES_USER=mashuk
+POSTGRES_PASSWORD=<длинный пароль>
+POSTGRES_DB=mashuk_platform
+AUTH_SECRET=<openssl rand -hex 32>
+PUBLIC_URL=https://mashuk.online
+LMS_OAUTH_AUTHORIZE_URL=https://lms.mashuk.online/oauth/authorize
+LMS_OAUTH_TOKEN_URL=https://lms.mashuk.online/oauth/token
+LMS_OAUTH_USERINFO_URL=https://lms.mashuk.online/oauth/userinfo
+LMS_OAUTH_CLIENT_ID=<из панели LMS>
+LMS_OAUTH_CLIENT_SECRET=<из панели LMS>
+LMS_OAUTH_SCOPE="openid email profile"
+
+
+РАЗВЁРТЫВАНИЕ С НУЛЯ
+--------------------
+1. Подготовка сервера (Ubuntu): Docker, Compose, swap 2 ГБ.
+   Готовый cloud-init: deploy/cloud-init.yaml
+
+2. Код и конфигурация:
+   sudo mkdir -p /opt/mashuk && sudo chown "$USER" /opt/mashuk
+   git clone https://github.com/ZuevPU/MashukOnline.git /opt/mashuk
+   cd /opt/mashuk
+   cp deploy/.env.production.example .env
+   nano .env
+
+3. Запуск (образ тянется из ghcr.io, на сервере не собирается):
+   docker compose --env-file .env pull app
+   docker compose --env-file .env up -d
+
+4. Миграции и администратор:
+   docker compose --env-file .env --profile tools run --rm tools pnpm db:migrate
+   docker compose --env-file .env --profile tools run --rm tools pnpm admin:create -- admin@czmashuk.ru "Администратор"
+
+5. Проверка:
+   curl -s https://DOMAIN/api/health
+
+DNS: A-запись домена -> IP сервера. TLS Caddy получит автоматически.
+
+
+ОБСЛУЖИВАНИЕ
+------------
+Бэкап (база + файлы) ежедневно, cron:
+  30 3 * * * cd /opt/mashuk && ./deploy/backup.sh >> /var/log/mashuk-backup.log 2>&1
+
+Автообновление из ghcr.io каждые 5 минут, cron:
+  */5 * * * * bash /opt/mashuk/deploy/autoupdate.sh >> /var/log/mashuk-autoupdate.log 2>&1
+
+Очистка места при нехватке диска:
+  docker builder prune -af && docker image prune -af
+
+
+КОГДА УВЕЛИЧИВАТЬ СЕРВЕР
+-----------------------
+- Диск > 80% или много файлов заявок -> 40–50 ГБ или S3.
+- Swap активно используется -> 2–4 ГБ RAM.
+- Много одновременных пользователей в хабе/опросах -> 2–4 vCPU и отдельная БД.
+- Мониторинг (Prometheus/Grafana) включается профилем metrics, +1–2 ГБ RAM.

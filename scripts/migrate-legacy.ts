@@ -179,8 +179,10 @@ async function main() {
     if (!program) console.warn(`Программа «${programSlug}» не найдена — заявки будут без привязки.`);
   }
 
-  console.log(`Источник: ${sourceUrl}`);
-  console.log(`Цель:     ${targetUrl}`);
+  // Пароли из строк подключения в лог не пишем
+  const masked = (url: string) => url.replace(/\/\/[^@/]*@/, "//***@");
+  console.log(`Источник: ${masked(sourceUrl)}`);
+  console.log(`Цель:     ${masked(targetUrl)}`);
   console.log(`Файлы:    ${uploadsDir ?? "(не заданы — пути к файлам не восстановить)"}`);
   if (DRY_RUN) console.log("Режим:    dry-run (запись не выполняется)");
 

@@ -25,7 +25,9 @@ git fetch --prune origin main >/dev/null 2>&1 || true
 git checkout -B main FETCH_HEAD >/dev/null 2>&1 || true
 git reset --hard FETCH_HEAD >/dev/null 2>&1 || true
 
-$COMPOSE pull -q app tools >/dev/null 2>&1 || true
+# tools — в профиле tools: без --profile compose его не подтягивает, и миграции
+# запускаются из старого образа
+$COMPOSE --profile tools pull -q app tools >/dev/null 2>&1 || true
 
 cfg_after="$(config_hash)"
 img_after="$(docker image inspect --format '{{.Id}}' "$APP_IMAGE" 2>/dev/null || true)"

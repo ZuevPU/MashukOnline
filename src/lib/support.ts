@@ -1,5 +1,6 @@
 import { count, desc, eq, isNotNull, isNull } from "drizzle-orm";
 import { getDb, schema } from "./db/client";
+import { escapeHtml, notifyTelegram } from "./telegram";
 
 /**
  * Обращения в техническую поддержку.
@@ -37,6 +38,11 @@ export async function createSupportRequest(input: SupportInput): Promise<number>
     .insert(schema.supportRequests)
     .values({ name, email, message, page: input.page?.slice(0, 300) || null })
     .returning({ id: schema.supportRequests.id });
+
+  const lines = [`<b>Техподдержка · обращение №${row.id}</b>`, `${escapeHtml(name)} · ${escapeHtml(email)}`];
+  if (input.page) lines.push(`Страница: ${escapeHtml(input.page.slice(0, 300))}`);
+  lines.push("", escapeHtml(message));
+  await notifyTelegram(lines.join("\n"));
   return row.id;
 }
 

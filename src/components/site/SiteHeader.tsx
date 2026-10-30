@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand/BrandLogo";
 import { ButtonLink } from "@/components/ui/Button";
-import { getSessionUser } from "@/lib/auth";
+import { getSessionUser, homeFor } from "@/lib/auth";
 import { lmsConfigured } from "@/lib/lms-sso";
 
 const NAV = [
@@ -56,9 +56,15 @@ function Social() {
 }
 
 export async function SiteHeader() {
-  // «Кабинет» ведёт вошедшего в личный кабинет, а гостя — на вход
+  // «Кабинет» ведёт администратора в админку, участника — в его программу
+  // (без программ — в настройки профиля), гостя — на вход
   const user = await getSessionUser();
-  const action = { href: user ? "/cabinet" : "/join" };
+  let href = "/join";
+  if (user) {
+    const home = await homeFor(user.member.id, user.isCenterAdmin);
+    href = home === "/" ? "/cabinet" : home;
+  }
+  const action = { href };
 
   return (
     <header className="sticky top-0 z-20 border-b border-[var(--line)] bg-paper-warm/90 backdrop-blur-glass">

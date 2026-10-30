@@ -50,10 +50,10 @@ export default async function AdminLayout({ children }: { children: ReactNode })
               Поддержка
             </Link>
           )}
-          <span className="text-ink-faint">
+          <Link href="/cabinet" className="text-ink-faint no-underline hover:text-navy hover:underline" title="Настройки профиля">
             {user.member.name}
             {user.isCenterAdmin ? ", администратор Центра" : ""}
-          </span>
+          </Link>
           <form action={logoutAction} className="ml-auto">
             <button
               type="submit"

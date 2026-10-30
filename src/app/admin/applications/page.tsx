@@ -1,4 +1,8 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { FormModeratorsPanel } from "@/components/admin/FormModeratorsPanel";
+import { accessibleForms, listFormModerators } from "@/lib/forms/access";
+import { listMemberOptions } from "@/lib/users";
 import { requireAdminArea } from "@/lib/admin";
 import {
   ALL_LIMIT,
@@ -49,10 +53,15 @@ function buildQuery(
 }
 
 export default async function ApplicationsPage({ searchParams }: PageProps) {
-  await requireAdminArea();
+  const user = await requireAdminArea();
+  // Вкладки — только формы, к которым у человека есть доступ
+  const allowed = (await accessibleForms(user)).filter((key): key is FormId => key !== "support");
+  if (allowed.length === 0) redirect(user.isCenterAdmin ? "/admin" : "/admin/programs");
   const sp = await searchParams;
   const rawForm = Array.isArray(sp.form) ? sp.form[0] : sp.form;
-  const form: FormId = rawForm && isFormId(rawForm) ? rawForm : "apply";
+  const form: FormId = rawForm && isFormId(rawForm) && allowed.includes(rawForm) ? rawForm : allowed[0];
+  const moderators = user.isCenterAdmin ? await listFormModerators(form) : [];
+  const candidates = user.isCenterAdmin ? await listMemberOptions() : [];
   const filters = parseFilters(form, sp);
   const [{ rows, total, page, pages, limit }, streams] = await Promise.all([
     listApplications(form, filters),
@@ -96,7 +105,7 @@ export default async function ApplicationsPage({ searchParams }: PageProps) {
       </div>
 
       <nav className="flex flex-wrap gap-2">
-        {(["apply", "info", "muni", "media", "cultistud"] as FormId[]).map((id) => (
+        {allowed.map((id) => (
           <Link
             key={id}
             href={buildQuery(form, sp, { form: id, page: "" })}
@@ -108,6 +117,10 @@ export default async function ApplicationsPage({ searchParams }: PageProps) {
           </Link>
         ))}
       </nav>
+
+      {user.isCenterAdmin && (
+        <FormModeratorsPanel form={form} label={FORM_META[form].label} moderators={moderators} candidates={candidates} />
+      )}
 
       <form method="get" className="flex flex-wrap items-end gap-3 rounded-panel border border-[var(--line)] bg-white p-4">
         <input type="hidden" name="form" value={form} />

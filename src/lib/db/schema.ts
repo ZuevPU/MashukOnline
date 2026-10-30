@@ -665,3 +665,22 @@ export const supportRequests = pgTable(
     index("support_requests_resolved_idx").on(table.resolvedAt),
   ],
 );
+
+/**
+ * Модераторы форм: кто, кроме администратора Центра, видит заявки формы
+ * (apply, info, muni, media, cultistud) или обращения в поддержку (support).
+ */
+export const formModerators = pgTable(
+  "form_moderators",
+  {
+    form: text("form").notNull(),
+    memberId: text("member_id")
+      .notNull()
+      .references(() => members.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.form, table.memberId] }),
+    index("form_moderators_member_idx").on(table.memberId),
+  ],
+);

@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { LogOut } from "lucide-react";
-import { requireAdminArea } from "@/lib/admin";
+import { listManagedPrograms, requireAdminArea } from "@/lib/admin";
+import { accessibleForms } from "@/lib/forms/access";
 import { logoutAction } from "@/lib/auth-actions";
 import { hasDatabase } from "@/lib/db/client";
 
@@ -26,6 +27,8 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   }
 
   const user = await requireAdminArea();
+  const [programs, forms] = await Promise.all([listManagedPrograms(user), accessibleForms(user)]);
+  const hasApplications = forms.some((key) => key !== "support");
 
   return (
     <div className="min-h-[70vh] bg-paper-warm pb-16">
@@ -36,18 +39,24 @@ export default async function AdminLayout({ children }: { children: ReactNode })
               Обзор
             </Link>
           )}
-          <Link href="/admin/programs" className="font-semibold text-navy no-underline hover:underline">
-            Программы
-          </Link>
-          <Link
-            href="/admin/applications"
-            className="font-semibold text-navy no-underline hover:underline"
-          >
-            Заявки
-          </Link>
-          {user.isCenterAdmin && (
+          {(user.isCenterAdmin || programs.length > 0) && (
+            <Link href="/admin/programs" className="font-semibold text-navy no-underline hover:underline">
+              Программы
+            </Link>
+          )}
+          {hasApplications && (
+            <Link href="/admin/applications" className="font-semibold text-navy no-underline hover:underline">
+              Заявки
+            </Link>
+          )}
+          {forms.includes("support") && (
             <Link href="/admin/support" className="font-semibold text-navy no-underline hover:underline">
               Поддержка
+            </Link>
+          )}
+          {user.isCenterAdmin && (
+            <Link href="/admin/users" className="font-semibold text-navy no-underline hover:underline">
+              Пользователи
             </Link>
           )}
           <Link href="/cabinet" className="text-ink-faint no-underline hover:text-navy hover:underline" title="Настройки профиля">

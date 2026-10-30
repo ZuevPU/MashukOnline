@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { CabinetForm } from "@/components/site/CabinetForm";
 import { getSessionUser } from "@/lib/auth";
+import { accessLabel, accessibleForms } from "@/lib/forms/access";
 import { getDb, hasDatabase, schema } from "@/lib/db/client";
 
 export const dynamic = "force-dynamic";
@@ -45,8 +46,15 @@ export default async function CabinetPage({ searchParams }: PageProps) {
     .innerJoin(schema.programs, eq(schema.programs.id, schema.programMembers.programId))
     .where(eq(schema.programMembers.memberId, user.member.id));
 
+  const forms = (await accessibleForms(user)).map((key) => ({
+    key,
+    label: accessLabel(key),
+    href: key === "support" ? "/admin/support" : `/admin/applications?form=${key}`,
+  }));
+
   return (
     <CabinetForm
+      forms={forms}
       profile={{
         name: profile?.name ?? user.member.name,
         contact: profile?.contact ?? "",

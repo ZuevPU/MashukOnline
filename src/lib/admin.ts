@@ -5,6 +5,7 @@ import { getDb, schema } from "./db/client";
 import { getSessionUser } from "./auth";
 import type { SessionUser } from "./auth";
 import type { MemberRole } from "./types";
+import { accessibleForms } from "./forms/access";
 
 /**
  * Права в админке.
@@ -76,13 +77,13 @@ export const listManagedPrograms = cache(async (user: SessionUser): Promise<Admi
   return rows.map((row) => ({ ...row, members: Number(row.members) }));
 });
 
-/** Вход в админку: администратор Центра или команда хотя бы одной программы. */
+/** Вход в админку: администратор Центра, команда программы или модератор формы. */
 export async function requireAdminArea(): Promise<SessionUser> {
   const user = await getSessionUser();
   if (!user) redirect("/join?next=/admin");
   if (user.isCenterAdmin) return user;
-  const programs = await listManagedPrograms(user);
-  if (programs.length === 0) redirect("/");
+  const [programs, forms] = await Promise.all([listManagedPrograms(user), accessibleForms(user)]);
+  if (programs.length === 0 && forms.length === 0) redirect("/");
   return user;
 }
 

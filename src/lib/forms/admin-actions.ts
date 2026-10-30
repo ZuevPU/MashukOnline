@@ -3,15 +3,14 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { isFormId, restoreApplication, trashApplication } from "./admin";
-import { currentAdminUser } from "./guard";
+import { currentFormUser } from "./guard";
 
 /** Мягкое удаление и восстановление заявок из карточки. */
 async function setDeleted(formData: FormData, trash: boolean): Promise<void> {
-  const user = await currentAdminUser();
-  if (!user) redirect("/join?next=/admin/applications");
   const form = String(formData.get("form") ?? "");
   const id = Number(formData.get("id"));
-  if (isFormId(form) && Number.isInteger(id)) {
+  if (!isFormId(form) || !(await currentFormUser(form))) redirect("/join?next=/admin/applications");
+  if (Number.isInteger(id)) {
     await (trash ? trashApplication(form, id) : restoreApplication(form, id));
   }
   revalidatePath("/admin/applications");

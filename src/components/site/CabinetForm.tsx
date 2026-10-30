@@ -53,11 +53,14 @@ function Message({ state }: { state: FormState }) {
 export function CabinetForm({
   profile,
   programs,
+  forms,
   isCenterAdmin,
   adminError,
 }: {
   profile: { name: string; contact: string; position: string; org: string; city: string };
   programs: { slug: string; title: string; role: MemberRole }[];
+  /** Формы и обращения, которые человек модерирует */
+  forms: { key: string; label: string; href: string }[];
   isCenterAdmin: boolean;
   adminError: boolean;
 }) {
@@ -105,6 +108,30 @@ export function CabinetForm({
                     </span>
                     <span className="rounded-full bg-sky-tint px-3 py-1 text-caption font-semibold text-sky-ink">
                       {MEMBER_ROLE_LABELS[program.role]}
+                    </span>
+                    <ArrowRight size={15} className="text-ink-faint" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {forms.length > 0 && (
+          <section className="card mb-6 p-7">
+            <p className="eyebrow mb-4">{isCenterAdmin ? "Формы и обращения" : "Мои формы"}</p>
+            <ul className="m-0 grid list-none gap-2.5 p-0">
+              {forms.map((form) => (
+                <li key={form.key}>
+                  <Link
+                    href={form.href}
+                    className="flex items-center gap-3 rounded-field border border-[var(--line)] bg-white px-4 py-3 no-underline transition-colors duration-150 hover:border-navy/30"
+                  >
+                    <span className="min-w-0 flex-1 truncate font-display text-body font-semibold text-navy">
+                      {form.label}
+                    </span>
+                    <span className="rounded-full bg-sky-tint px-3 py-1 text-caption font-semibold text-sky-ink">
+                      {isCenterAdmin ? "Администратор" : "Модератор"}
                     </span>
                     <ArrowRight size={15} className="text-ink-faint" />
                   </Link>

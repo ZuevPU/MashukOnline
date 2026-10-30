@@ -2,7 +2,7 @@ import { ZipArchive } from "archiver";
 import { NextResponse } from "next/server";
 import { FORM_META, allApplications, isFormId, parseFilters } from "@/lib/forms/admin";
 import { readFormFile } from "@/lib/forms/files";
-import { currentAdminUser } from "@/lib/forms/guard";
+import { currentFormUser } from "@/lib/forms/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -59,7 +59,7 @@ export async function GET(
 ) {
   const { form } = await params;
   if (!isFormId(form)) return NextResponse.json({ error: "not found" }, { status: 404 });
-  if (!(await currentAdminUser())) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  if (!(await currentFormUser(form))) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   const url = new URL(request.url);
   const sp = Object.fromEntries(url.searchParams.entries());

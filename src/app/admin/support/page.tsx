@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth";
+import { FormModeratorsPanel } from "@/components/admin/FormModeratorsPanel";
+import { canAccessForm, listFormModerators } from "@/lib/forms/access";
+import { listMemberOptions } from "@/lib/users";
 import { listSupportRequests } from "@/lib/support";
 import { toggleSupportResolvedAction } from "@/lib/support-actions";
 
@@ -13,7 +16,10 @@ interface PageProps {
 
 export default async function SupportAdminPage({ searchParams }: PageProps) {
   const user = (await getSessionUser())!;
-  if (!user.isCenterAdmin) redirect("/admin/programs");
+  if (!(await canAccessForm(user, "support"))) redirect("/admin");
+  const [moderators, candidates] = user.isCenterAdmin
+    ? await Promise.all([listFormModerators("support"), listMemberOptions()])
+    : [[], []];
 
   const sp = await searchParams;
   const resolved = sp.view === "resolved";
@@ -27,6 +33,10 @@ export default async function SupportAdminPage({ searchParams }: PageProps) {
       <h1 className="m-0 font-display text-[clamp(28px,3.4vw,40px)] leading-tight font-semibold tracking-[-0.045em] text-navy">
         Техническая поддержка
       </h1>
+
+      {user.isCenterAdmin && (
+        <FormModeratorsPanel form="support" label="Техническая поддержка" moderators={moderators} candidates={candidates} />
+      )}
 
       <nav className="flex flex-wrap gap-2 text-meta">
         <Link href="/admin/support" className={tab(!resolved)}>

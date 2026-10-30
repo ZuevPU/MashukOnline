@@ -4,6 +4,7 @@ import { ArrowUpRight, ExternalLink } from "lucide-react";
 import { getSessionUser } from "@/lib/auth";
 import { listManagedPrograms } from "@/lib/admin";
 import { FORM_META, formCounts } from "@/lib/forms/admin";
+import { accessibleForms } from "@/lib/forms/access";
 import type { FormId } from "@/lib/forms/admin";
 import { countOpenSupportRequests } from "@/lib/support";
 
@@ -44,7 +45,12 @@ function formatDate(date: Date | null): string {
 export default async function AdminOverview() {
   const user = (await getSessionUser())!;
   // Команда программы видит только свои программы
-  if (!user.isCenterAdmin) redirect("/admin/programs");
+  if (!user.isCenterAdmin) {
+    const programs = await listManagedPrograms(user);
+    if (programs.length > 0) redirect("/admin/programs");
+    const forms = await accessibleForms(user);
+    redirect(forms.some((key) => key !== "support") ? "/admin/applications" : "/admin/support");
+  }
 
   const [programs, support, ...counts] = await Promise.all([
     listManagedPrograms(user),

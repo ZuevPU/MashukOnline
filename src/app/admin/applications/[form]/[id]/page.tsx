@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdminArea } from "@/lib/admin";
+import { canAccessForm } from "@/lib/forms/access";
 import { FORM_META, getApplication, isFormId } from "@/lib/forms/admin";
 import { restoreApplicationAction, trashApplicationAction } from "@/lib/forms/admin-actions";
 
@@ -22,9 +23,9 @@ function display(value: unknown): string {
 }
 
 export default async function ApplicationDetail({ params }: PageProps) {
-  await requireAdminArea();
+  const user = await requireAdminArea();
   const { form, id } = await params;
-  if (!isFormId(form)) notFound();
+  if (!isFormId(form) || !(await canAccessForm(user, form))) notFound();
   const numericId = Number(id);
   if (!Number.isInteger(numericId)) notFound();
 

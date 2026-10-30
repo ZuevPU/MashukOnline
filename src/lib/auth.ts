@@ -233,5 +233,14 @@ export async function homeFor(memberId: string, isCenterAdmin: boolean): Promise
     .orderBy(asc(schema.programs.startDate))
     .limit(1);
 
-  return row ? `/programs/${row.slug}/hub` : "/";
+  if (row) return `/programs/${row.slug}/hub`;
+
+  // Модератор формы без программ — сразу к заявкам или обращениям
+  const forms = await db
+    .select({ form: schema.formModerators.form })
+    .from(schema.formModerators)
+    .where(eq(schema.formModerators.memberId, memberId));
+  if (forms.some((f) => f.form !== "support")) return "/admin/applications";
+  if (forms.length > 0) return "/admin/support";
+  return "/";
 }

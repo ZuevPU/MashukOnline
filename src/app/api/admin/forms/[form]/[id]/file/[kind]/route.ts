@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { contentTypeForExt, readFormFile } from "@/lib/forms/files";
 import { getFileInfo, isFormId } from "@/lib/forms/admin";
-import { currentAdminUser } from "@/lib/forms/guard";
+import { currentFormUser } from "@/lib/forms/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,7 +17,7 @@ export async function GET(
 ) {
   const { form, id, kind } = await params;
   if (!isFormId(form)) return NextResponse.json({ error: "not found" }, { status: 404 });
-  if (!(await currentAdminUser())) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  if (!(await currentFormUser(form))) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   const numericId = Number(id);
   const info = await getFileInfo(form, numericId, kind);

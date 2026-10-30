@@ -1,15 +1,14 @@
 import { getSessionUser } from "../auth";
-import { listManagedPrograms } from "../admin";
 import type { SessionUser } from "../auth";
+import { canAccessForm } from "./access";
+import type { AccessKey } from "./access";
 
 /**
- * Доступ к админке заявок: администратор Центра или команда хотя бы одной
- * программы. Для API возвращает null вместо редиректа — вызывающий сам решает.
+ * Доступ к заявкам формы: администратор Центра или модератор этой формы.
+ * Для API возвращает null вместо редиректа — вызывающий сам решает.
  */
-export async function currentAdminUser(): Promise<SessionUser | null> {
+export async function currentFormUser(form: AccessKey): Promise<SessionUser | null> {
   const user = await getSessionUser();
   if (!user) return null;
-  if (user.isCenterAdmin) return user;
-  const programs = await listManagedPrograms(user);
-  return programs.length > 0 ? user : null;
+  return (await canAccessForm(user, form)) ? user : null;
 }

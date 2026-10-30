@@ -252,6 +252,11 @@ export function ApplicationForm({ config }: { config: FormConfig }) {
           </div>
         ) : null}
 
+        {config.closedText ? (
+          <p className="mt-6 rounded-[var(--radius-card)] border border-[var(--line-soft)] bg-white p-6 text-ui text-ink sm:p-8">
+            {config.closedText}
+          </p>
+        ) : (
         <form
           className="mt-6 rounded-[var(--radius-card)] border border-[var(--line-soft)] bg-white p-6 shadow-[var(--shadow-brand)] sm:p-8"
           onSubmit={(event) => {
@@ -398,6 +403,7 @@ export function ApplicationForm({ config }: { config: FormConfig }) {
             </button>
           </div>
         </form>
+        )}
       </div>
     </section>
   );

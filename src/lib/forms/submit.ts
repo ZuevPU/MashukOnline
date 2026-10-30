@@ -6,6 +6,7 @@ import { applyConfig } from "./apply-config";
 import { infoConfig } from "./info-config";
 import { muniConfig } from "./muni-config";
 import { mediaConfig } from "./media-config";
+import { CULTISTUD_STREAM, cultistudConfig } from "./cultistud-config";
 import type { FormConfig } from "./types";
 
 /**
@@ -21,6 +22,7 @@ export const FORM_CONFIGS: Record<FormConfig["id"], FormConfig> = {
   info: infoConfig,
   muni: muniConfig,
   media: mediaConfig,
+  cultistud: cultistudConfig,
 };
 
 export class SubmitError extends Error {}
@@ -106,6 +108,8 @@ export async function submitForm(
       throw new SubmitError("Некорректные данные формы");
     }
   }
+
+  if (config.closedText) throw new SubmitError("Приём заявок закрыт");
 
   validateFields(config, data);
 
@@ -259,6 +263,30 @@ export async function submitForm(
     return { id: rows[0].id };
   }
 
+  if (id === "cultistud") {
+    await validatePerson(data);
+    const rows = await db
+      .insert(schema.cultistudApplications)
+      .values({
+        programId,
+        fio: str(data, "fio", 200),
+        federalDistrict: normalizeDistrict(str(data, "federal_district", 120)) || null,
+        region: str(data, "region", 120) || null,
+        city: str(data, "city", 120) || null,
+        workplace: str(data, "workplace", 300) || null,
+        position: str(data, "position", 200) || null,
+        birthDate: str(data, "birth_date", 20) || null,
+        snils: str(data, "snils", 20) || null,
+        inn: str(data, "inn", 20) || null,
+        phone: str(data, "phone", 40) || null,
+        email: str(data, "email", 254) || null,
+        stream: CULTISTUD_STREAM,
+        payloadRaw: data,
+      })
+      .returning({ id: schema.cultistudApplications.id });
+    return { id: rows[0].id };
+  }
+
   // muni
   await validateMuni(data);
   const rows = await db
@@ -324,11 +352,16 @@ async function validateInfo(data: Record<string, unknown>): Promise<void> {
   }
 }
 
-async function validateMuni(data: Record<string, unknown>): Promise<void> {
+/** СНИЛС, ИНН, почта и регион — общие проверки анкет муниципалитетов и семинара вузов. */
+async function validatePerson(data: Record<string, unknown>): Promise<void> {
   if (!validSnils(str(data, "snils"))) throw new SubmitError("Укажите корректный СНИЛС");
   if (!validInn(str(data, "inn"))) throw new SubmitError("Укажите корректный ИНН");
   if (!validEmail(str(data, "email"))) throw new SubmitError("Укажите корректный e-mail");
   if (!validRegion(str(data, "region"))) throw new SubmitError("Выберите регион из списка");
+}
+
+async function validateMuni(data: Record<string, unknown>): Promise<void> {
+  await validatePerson(data);
   if (!["Да", "да"].includes(str(data, "consent_confirm", 20))) {
     throw new SubmitError("Подтвердите подписание согласия");
   }

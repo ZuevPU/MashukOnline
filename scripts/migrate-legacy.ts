@@ -20,13 +20,19 @@ import { contentTypeForExt } from "../src/lib/forms/files";
  * пропускаются. Файлы копируются в хранилище под ключом applications/<имя>.
  */
 
-const TABLES = ["seminar_applications", "participant_details", "municipal_applications"] as const;
+const TABLES = [
+  "seminar_applications",
+  "participant_details",
+  "municipal_applications",
+  "cultistud_applications",
+] as const;
 type TableName = (typeof TABLES)[number];
 
 const FILE_COLUMNS: Record<TableName, string[]> = {
   seminar_applications: ["portfolio_path", "consent_path"],
   participant_details: ["passport_scan_path"],
   municipal_applications: ["consent_path"],
+  cultistud_applications: [],
 };
 
 function arg(name: string): string | undefined {

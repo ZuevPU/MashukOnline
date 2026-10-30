@@ -64,7 +64,9 @@ export interface FormFact {
 }
 
 export interface FormConfig {
-  id: "apply" | "info" | "muni" | "media";
+  id: "apply" | "info" | "muni" | "media" | "cultistud";
+  /** Приём заявок закрыт: вместо формы показывается этот текст, отправка отклоняется */
+  closedText?: string;
   endpoint: string;
   kicker?: string;
   title: string;

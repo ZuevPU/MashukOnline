@@ -6,7 +6,7 @@ import { getDb, schema } from "../db/client";
  * Три формы — семинар (apply), данные участников (info), муниципалитеты (muni).
  */
 
-export type FormId = "apply" | "info" | "muni" | "media";
+export type FormId = "apply" | "info" | "muni" | "media" | "cultistud";
 
 export interface AppFilters {
   q: string;
@@ -26,6 +26,7 @@ const SORTABLE: Record<FormId, Record<string, string>> = {
   info: { created_at: "createdAt", fio: "fioLatin", stream: "stream", country: "departCountry" },
   muni: { created_at: "createdAt", fio: "fio", email: "email", stream: "stream", region: "region" },
   media: { created_at: "createdAt", fio: "fio", email: "email", stream: "stream", country: "country" },
+  cultistud: { created_at: "createdAt", fio: "fio", email: "email", region: "region" },
 };
 
 export const FORM_META: Record<
@@ -156,10 +157,31 @@ export const FORM_META: Record<
       { key: "why", title: "Мотивация" },
     ],
   },
+  cultistud: {
+    label: "Семинар «Студенческие сообщества»",
+    short: "Студенческие сообщества",
+    fileColumns: [],
+    excel: [
+      { key: "id", title: "ID" },
+      { key: "created_at", title: "Дата подачи" },
+      { key: "fio", title: "ФИО" },
+      { key: "federal_district", title: "Федеральный округ" },
+      { key: "region", title: "Регион" },
+      { key: "city", title: "Город" },
+      { key: "workplace", title: "Учебное заведение / место работы" },
+      { key: "position", title: "Должность / курс" },
+      { key: "birth_date", title: "Дата рождения" },
+      { key: "snils", title: "СНИЛС" },
+      { key: "inn", title: "ИНН" },
+      { key: "phone", title: "Телефон" },
+      { key: "email", title: "E-mail" },
+      { key: "stream", title: "Даты" },
+    ],
+  },
 };
 
 export function isFormId(value: string): value is FormId {
-  return value === "apply" || value === "info" || value === "muni" || value === "media";
+  return value === "apply" || value === "info" || value === "muni" || value === "media" || value === "cultistud";
 }
 
 function intParam(raw: unknown, fallback: number, lo: number, hi: number): number {
@@ -227,6 +249,12 @@ const SUMMARY: Record<FormId, { key: string; column: string }[]> = {
     { key: "org", column: "orgName" },
     { key: "stream", column: "stream" },
   ],
+  cultistud: [
+    { key: "fio", column: "fio" },
+    { key: "email", column: "email" },
+    { key: "region", column: "region" },
+    { key: "org", column: "workplace" },
+  ],
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -236,6 +264,7 @@ function table(form: FormId): AnyTable {
   if (form === "apply") return schema.seminarApplications;
   if (form === "info") return schema.participantDetails;
   if (form === "muni") return schema.municipalApplications;
+  if (form === "cultistud") return schema.cultistudApplications;
   return schema.mediaApplications;
 }
 
@@ -253,7 +282,9 @@ function snakeRow(row: Record<string, unknown>): Record<string, unknown> {
 function searchColumns(form: FormId): string[] {
   if (form === "apply") return ["fio_latin", "fio_ru", "email", "phone", "country", "city", "org_name", "citizenship"];
   if (form === "info") return ["fio_latin", "citizenship", "depart_country", "depart_city", "stream"];
-  if (form === "muni") return ["fio", "email", "phone", "region", "city", "workplace", "federal_district", "position"];
+  if (form === "muni" || form === "cultistud") {
+    return ["fio", "email", "phone", "region", "city", "workplace", "federal_district", "position"];
+  }
   return ["fio", "email", "phone", "org_name", "city", "country", "position"];
 }
 

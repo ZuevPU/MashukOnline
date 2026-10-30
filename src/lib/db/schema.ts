@@ -617,6 +617,32 @@ export const mediaApplications = pgTable(
 );
 
 
+/** Семинар «Студенческие сообщества как пространство поликультурного взаимодействия». */
+export const cultistudApplications = pgTable(
+  "cultistud_applications",
+  {
+    ...applicationBase(),
+    fio: text("fio").notNull(),
+    federalDistrict: text("federal_district"),
+    region: text("region"),
+    city: text("city"),
+    workplace: text("workplace"),
+    position: text("position"),
+    birthDate: text("birth_date"),
+    snils: text("snils"),
+    inn: text("inn"),
+    phone: text("phone"),
+    email: text("email"),
+    stream: text("stream"),
+  },
+  (table) => [
+    index("cultistud_applications_created_idx").on(table.createdAt),
+    index("cultistud_applications_email_idx").on(table.email),
+    index("cultistud_applications_program_idx").on(table.programId),
+    index("cultistud_applications_deleted_idx").on(table.deletedAt),
+  ],
+);
+
 /* ==========================================================================
    Обращения в техническую поддержку (форма на сайте)
    ========================================================================== */

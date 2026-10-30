@@ -89,7 +89,7 @@ export default async function ApplicationsPage({ searchParams }: PageProps) {
       </div>
 
       <nav className="flex flex-wrap gap-2">
-        {(["apply", "info", "muni", "media"] as FormId[]).map((id) => (
+        {(["apply", "info", "muni", "media", "cultistud"] as FormId[]).map((id) => (
           <Link
             key={id}
             href={buildQuery(form, sp, { form: id, page: "" })}

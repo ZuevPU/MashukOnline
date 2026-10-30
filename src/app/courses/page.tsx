@@ -45,8 +45,7 @@ export default function CoursesPage() {
                 </p>
                 <a
                   href={item.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  {...(item.url.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                   className="mt-auto inline-flex items-center gap-2 font-semibold text-navy no-underline hover:underline"
                 >
                   {item.label}

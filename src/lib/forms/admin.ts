@@ -394,3 +394,30 @@ export async function getFileInfo(
   const fio = String(row.fio ?? row.fio_latin ?? row.fio_ru ?? `id_${id}`);
   return { path: String(path), fio };
 }
+
+export interface FormCounts {
+  total: number;
+  week: number;
+  last: Date | null;
+}
+
+/** Сводка по форме для обзора в админке: всего заявок, за 7 дней и дата последней. */
+export async function formCounts(form: FormId): Promise<FormCounts> {
+  const db = getDb();
+  if (!db) return { total: 0, week: 0, last: null };
+  const t = table(form);
+  const weekAgo = new Date(Date.now() - 7 * 86_400_000);
+  const [row] = await db
+    .select({
+      total: sql<number>`count(*)::int`,
+      week: sql<number>`count(*) filter (where ${t.createdAt} >= ${weekAgo})::int`,
+      last: sql<Date | null>`max(${t.createdAt})`,
+    })
+    .from(t)
+    .where(isNull(t.deletedAt));
+  return {
+    total: row?.total ?? 0,
+    week: row?.week ?? 0,
+    last: row?.last ? new Date(row.last) : null,
+  };
+}

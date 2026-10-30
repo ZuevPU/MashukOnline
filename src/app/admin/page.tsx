@@ -1,79 +1,168 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { redirect } from "next/navigation";
+import { ArrowUpRight, ExternalLink } from "lucide-react";
 import { getSessionUser } from "@/lib/auth";
 import { listManagedPrograms } from "@/lib/admin";
-import { formatDateRange, programSeason } from "@/lib/dates";
-import { SEASONS } from "@/lib/brand";
-import type { SeasonKey } from "@/lib/types";
+import { FORM_META, formCounts } from "@/lib/forms/admin";
+import type { FormId } from "@/lib/forms/admin";
+import { countOpenSupportRequests } from "@/lib/support";
 
-export const metadata = { title: "Программы" };
+export const metadata = { title: "Обзор" };
 
-export default async function AdminHome() {
+/** Публичные страницы портала. */
+const PAGES: { href: string; title: string; note: string }[] = [
+  { href: "/", title: "Главная «Цифровой Машук»", note: "Витрина, преимущества, материалы, форма поддержки" },
+  { href: "/courses", title: "Программы обучения", note: "Карточки онлайн-курсов со ссылками на LMS" },
+  { href: "/bestpractice", title: "База лучших наставнических практик", note: "100 практик — победителей конкурса «Наставничество»" },
+  { href: "/events/seminar", title: "Семинар «Образование на высоте»", note: "Лендинг мероприятия" },
+  { href: "/events/media", title: "Медиамероприятие", note: "Лендинг «Медиакомпетенции в сфере межнациональных отношений»" },
+  { href: "/results/education-height", title: "Итоги «Образование на высоте»", note: "Результаты программы" },
+  { href: "/poll", title: "Живые опросы", note: "Вход в опрос по коду" },
+  { href: "/support", title: "Техническая поддержка", note: "Форма обращения" },
+  { href: "/privacy", title: "Политика конфиденциальности", note: "Обработка персональных данных" },
+];
+
+/** Формы заявок: публичный адрес и раздел в админке. */
+const FORMS: { id: FormId; href: string }[] = [
+  { id: "apply", href: "/apply" },
+  { id: "info", href: "/info" },
+  { id: "muni", href: "/muni" },
+  { id: "media", href: "/events/media/apply" },
+];
+
+const EXTERNAL: { href: string; title: string; note: string }[] = [
+  { href: "https://lms.mashuk.online/", title: "LMS — онлайн-курсы", note: "lms.mashuk.online" },
+  { href: "https://practices.edu.dobro.ru/", title: "Практики на ДОБРО.РФ", note: "practices.edu.dobro.ru" },
+];
+
+function formatDate(date: Date | null): string {
+  if (!date) return "заявок нет";
+  return `последняя ${date.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" })}`;
+}
+
+export default async function AdminOverview() {
   const user = (await getSessionUser())!;
-  const programs = await listManagedPrograms(user);
+  // Команда программы видит только свои программы
+  if (!user.isCenterAdmin) redirect("/admin/programs");
+
+  const [programs, support, ...counts] = await Promise.all([
+    listManagedPrograms(user),
+    countOpenSupportRequests(),
+    ...FORMS.map((form) => formCounts(form.id)),
+  ]);
 
   return (
-    <div className="wrap flex flex-col gap-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <h1 className="m-0 font-display text-[clamp(28px,3.4vw,40px)] leading-tight font-semibold tracking-[-0.045em] text-navy">
-          Программы
-        </h1>
-        {user.isCenterAdmin && (
-          <Link
-            href="/admin/programs/new"
-            className="inline-flex min-h-11 items-center gap-2 rounded-full bg-navy px-5 text-ui font-semibold text-white no-underline transition-colors duration-150 hover:bg-navy-deep focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy"
-          >
-            <Plus size={16} />
-            Новая программа
-          </Link>
-        )}
-      </div>
+    <div className="wrap flex flex-col gap-10">
+      <h1 className="m-0 font-display text-[clamp(28px,3.4vw,40px)] leading-tight font-semibold tracking-[-0.045em] text-navy">
+        Обзор портала
+      </h1>
 
-      {programs.length === 0 ? (
-        <p className="m-0 rounded-soft border border-[var(--line)] bg-white px-6 py-5 text-ui text-ink-soft">
-          Программ пока нет. Создайте первую — у неё появятся страница, расписание и закрытое
-          рабочее пространство для участников.
-        </p>
-      ) : (
-        <ul className="m-0 flex list-none flex-col gap-3 p-0">
-          {programs.map((program) => {
-            const season =
-              SEASONS[programSeason({ startDate: program.startDate, season: (program.season as SeasonKey | null) ?? undefined })];
-            return (
-              <li key={program.id}>
-                <Link
-                  href={`/admin/programs/${program.slug}`}
-                  className="group grid gap-4 rounded-panel border border-[var(--line)] bg-white p-5 no-underline transition-colors duration-150 hover:border-navy/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy md:grid-cols-[6px_minmax(0,1fr)_auto] md:items-center"
-                >
-                  <span className="hidden h-full min-h-12 rounded-full md:block" style={{ background: season.accent }} aria-hidden="true" />
-                  <span className="min-w-0">
-                    <span className="block text-meta text-ink-soft">{program.subtitle}</span>
-                    <span className="block font-display text-title font-semibold tracking-[-0.03em] text-navy group-hover:underline">
-                      {program.title}
-                    </span>
-                    <span className="mt-1 block text-meta text-ink-soft">
-                      {formatDateRange(program.startDate, program.endDate)}
-                    </span>
-                  </span>
-                  <span className="flex flex-wrap gap-2 text-caption">
-                    <Badge on>{program.members} в составе</Badge>
-                    <Badge on={program.hasPassword}>{program.hasPassword ? "Вход по паролю открыт" : "Пароль не задан"}</Badge>
-                    <Badge on={program.hasBuild}>{program.hasBuild ? "Сборка загружена" : "Без сборки"}</Badge>
-                  </span>
+      <Block title="Формы и обращения">
+        <ul className="m-0 grid list-none gap-3 p-0 md:grid-cols-2 xl:grid-cols-3">
+          {FORMS.map((form, index) => (
+            <li key={form.id} className="flex flex-col gap-3 rounded-panel border border-[var(--line)] bg-white p-5">
+              <span className="font-display text-lead font-semibold tracking-[-0.02em] text-navy">
+                {FORM_META[form.id].label}
+              </span>
+              <span className="text-meta text-ink-soft">
+                Всего: <b className="text-ink">{counts[index].total}</b> · за неделю:{" "}
+                <b className="text-ink">{counts[index].week}</b> · {formatDate(counts[index].last)}
+              </span>
+              <span className="mt-auto flex flex-wrap gap-2 text-meta">
+                <Link href={`/admin/applications?form=${form.id}`} className={PRIMARY}>
+                  Заявки
                 </Link>
-              </li>
-            );
-          })}
+                <a href={form.href} target="_blank" rel="noopener" className={SECONDARY}>
+                  Форма <ExternalLink size={13} />
+                </a>
+              </span>
+            </li>
+          ))}
+          <li className="flex flex-col gap-3 rounded-panel border border-[var(--line)] bg-white p-5">
+            <span className="font-display text-lead font-semibold tracking-[-0.02em] text-navy">Техническая поддержка</span>
+            <span className="text-meta text-ink-soft">
+              Новых обращений: <b className="text-ink">{support}</b>
+            </span>
+            <span className="mt-auto flex flex-wrap gap-2 text-meta">
+              <Link href="/admin/support" className={PRIMARY}>
+                Обращения
+              </Link>
+              <a href="/support" target="_blank" rel="noopener" className={SECONDARY}>
+                Форма <ExternalLink size={13} />
+              </a>
+            </span>
+          </li>
         </ul>
-      )}
+      </Block>
+
+      <Block title="Программы">
+        <Link
+          href="/admin/programs"
+          className="flex items-center justify-between gap-4 rounded-panel border border-[var(--line)] bg-white p-5 no-underline hover:border-navy/30"
+        >
+          <span className="text-ui text-ink">
+            Программ: <b>{programs.length}</b> — расписание, материалы, участники и рабочие пространства
+          </span>
+          <ArrowUpRight size={18} className="text-navy" />
+        </Link>
+      </Block>
+
+      <Block title="Страницы сайта">
+        <ul className="m-0 grid list-none gap-3 p-0 md:grid-cols-2 xl:grid-cols-3">
+          {PAGES.map((page) => (
+            <li key={page.href}>
+              <a
+                href={page.href}
+                target="_blank"
+                rel="noopener"
+                className="group flex h-full flex-col gap-1 rounded-panel border border-[var(--line)] bg-white p-5 no-underline hover:border-navy/30"
+              >
+                <span className="flex items-center justify-between gap-3 font-semibold text-navy group-hover:underline">
+                  {page.title}
+                  <ExternalLink size={14} className="shrink-0" />
+                </span>
+                <span className="text-meta text-ink-soft">{page.note}</span>
+                <span className="text-caption text-ink-faint">{page.href}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </Block>
+
+      <Block title="Внешние сервисы">
+        <ul className="m-0 grid list-none gap-3 p-0 md:grid-cols-2 xl:grid-cols-3">
+          {EXTERNAL.map((item) => (
+            <li key={item.href}>
+              <a
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex h-full flex-col gap-1 rounded-panel border border-[var(--line)] bg-white p-5 no-underline hover:border-navy/30"
+              >
+                <span className="flex items-center justify-between gap-3 font-semibold text-navy group-hover:underline">
+                  {item.title}
+                  <ExternalLink size={14} className="shrink-0" />
+                </span>
+                <span className="text-caption text-ink-faint">{item.note}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </Block>
     </div>
   );
 }
 
-function Badge({ on, children }: { on: boolean; children: React.ReactNode }) {
+const PRIMARY =
+  "inline-flex min-h-9 items-center rounded-full bg-navy px-4 font-semibold text-white no-underline hover:bg-navy-deep";
+const SECONDARY =
+  "inline-flex min-h-9 items-center gap-1.5 rounded-full bg-sky-tint px-4 font-semibold text-navy no-underline hover:bg-sky-pale";
+
+function Block({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <span className={`rounded-full px-3 py-1.5 ${on ? "bg-sky-tint text-sky-ink" : "bg-paper-warm text-ink-faint"}`}>
+    <section className="flex flex-col gap-4">
+      <h2 className="m-0 font-display text-title-sm font-semibold tracking-[-0.03em] text-ink">{title}</h2>
       {children}
-    </span>
+    </section>
   );
 }

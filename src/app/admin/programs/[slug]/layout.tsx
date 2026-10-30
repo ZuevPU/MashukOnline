@@ -27,7 +27,7 @@ export default async function AdminProgramLayout({
       {/* Боковое меню прижато к левому краю окна */}
       <aside className="border-b border-[var(--line)] bg-white px-4 py-4 md:px-8 lg:sticky lg:top-14 lg:h-[calc(100vh-3.5rem)] lg:overflow-y-auto lg:border-r lg:border-b-0 lg:px-5 lg:py-6">
         <Link
-          href="/admin"
+          href="/admin/programs"
           className="mb-4 inline-flex items-center gap-2 text-meta font-medium text-ink-soft no-underline hover:text-navy"
         >
           <ArrowLeft size={14} />

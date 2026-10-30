@@ -616,3 +616,26 @@ export const mediaApplications = pgTable(
   ],
 );
 
+
+/* ==========================================================================
+   Обращения в техническую поддержку (форма на сайте)
+   ========================================================================== */
+
+export const supportRequests = pgTable(
+  "support_requests",
+  {
+    id: serial("id").primaryKey(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    name: text("name").notNull(),
+    email: text("email").notNull(),
+    message: text("message").notNull(),
+    /** Страница, с которой отправили обращение */
+    page: text("page"),
+    /** Обращение разобрано */
+    resolvedAt: timestamp("resolved_at", { withTimezone: true }),
+  },
+  (table) => [
+    index("support_requests_created_idx").on(table.createdAt),
+    index("support_requests_resolved_idx").on(table.resolvedAt),
+  ],
+);

@@ -2,7 +2,8 @@ import Image from "next/image";
 import { ButtonLink } from "@/components/ui/Button";
 import { MountainLine } from "@/components/brand/MountainLine";
 import { CourseCard } from "@/components/courses/CourseCard";
-import { COURSES } from "@/lib/courses";
+import { SupportForm } from "@/components/site/SupportForm";
+import { COURSES, MARATHON_URL } from "@/lib/courses";
 import { DIRECTIONS } from "@/lib/types";
 
 const ADVANTAGES = [
@@ -133,15 +134,22 @@ export default function HomePage() {
                 </p>
               </div>
               <div className="flex flex-wrap gap-3 md:justify-end">
-                <ButtonLink href="https://lms.mashuk.online/" variant="light" external>
+                <ButtonLink href={MARATHON_URL} variant="light" external>
                   Онлайн-курсы
                 </ButtonLink>
-                <ButtonLink href="https://mashuk.online/bestpractice" variant="ghost" external>
+                <ButtonLink href="/bestpractice" variant="ghost">
                   База практик
                 </ButtonLink>
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------ ПОДДЕРЖКА */}
+      <section id="support" className="section scroll-mt-20 pt-0">
+        <div className="wrap">
+          <SupportForm />
         </div>
       </section>
     </>

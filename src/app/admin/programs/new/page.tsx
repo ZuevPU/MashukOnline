@@ -9,11 +9,11 @@ export const metadata = { title: "Новая программа" };
 
 export default async function NewProgramPage() {
   const user = await getSessionUser();
-  if (!user?.isCenterAdmin) redirect("/admin");
+  if (!user?.isCenterAdmin) redirect("/admin/programs");
 
   return (
     <div className="wrap flex flex-col gap-6">
-      <Link href="/admin" className="inline-flex items-center gap-2 text-meta font-medium text-ink-soft no-underline hover:text-navy">
+      <Link href="/admin/programs" className="inline-flex items-center gap-2 text-meta font-medium text-ink-soft no-underline hover:text-navy">
         <ArrowLeft size={14} />
         Все программы
       </Link>

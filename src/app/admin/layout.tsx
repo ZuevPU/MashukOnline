@@ -31,7 +31,12 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     <div className="min-h-[70vh] bg-paper-warm pb-16">
       <div className="border-b border-[var(--line)] bg-white">
         <div className="flex min-h-14 flex-wrap items-center gap-x-6 gap-y-2 px-4 py-2 text-meta md:px-8">
-          <Link href="/admin" className="font-display text-lead font-semibold tracking-[-0.02em] text-navy no-underline">
+          {user.isCenterAdmin && (
+            <Link href="/admin" className="font-display text-lead font-semibold tracking-[-0.02em] text-navy no-underline">
+              Обзор
+            </Link>
+          )}
+          <Link href="/admin/programs" className="font-semibold text-navy no-underline hover:underline">
             Программы
           </Link>
           <Link
@@ -40,6 +45,11 @@ export default async function AdminLayout({ children }: { children: ReactNode })
           >
             Заявки
           </Link>
+          {user.isCenterAdmin && (
+            <Link href="/admin/support" className="font-semibold text-navy no-underline hover:underline">
+              Поддержка
+            </Link>
+          )}
           <span className="text-ink-faint">
             {user.member.name}
             {user.isCenterAdmin ? ", администратор Центра" : ""}

@@ -183,7 +183,7 @@ export async function deleteProgramAction(_: AdminState, form: FormData): Promis
   await removeBuild(staff.programId);
   revalidatePath("/");
   revalidatePath("/admin", "layout");
-  redirect("/admin");
+  redirect("/admin/programs");
 }
 
 /* --- Расписание ---------------------------------------------------------- */

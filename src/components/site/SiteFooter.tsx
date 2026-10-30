@@ -3,7 +3,7 @@ import { BrandLogo } from "@/components/brand/BrandLogo";
 
 export function SiteFooter() {
   return (
-    <footer id="support" className="mesh py-14">
+    <footer id="contacts" className="mesh py-14">
       <div className="wrap grid gap-10 md:grid-cols-[1.2fr_0.8fr] md:items-end">
         <div>
           <p className="eyebrow eyebrow--light">Поддержка</p>
@@ -11,7 +11,11 @@ export function SiteFooter() {
             Техническая поддержка
           </h2>
           <p className="m-0 max-w-105 text-ui font-light leading-relaxed text-white/72">
-            Вопросы по онлайн-обучению и доступу к платформе — напишите нам, мы поможем.
+            Вопросы по онлайн-обучению и доступу к платформе — напишите нам через{" "}
+            <Link href="/support" className="text-white">
+              форму обращения
+            </Link>{" "}
+            или на почту, мы поможем.
           </p>
           <p className="mt-5">
             <a

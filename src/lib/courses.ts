@@ -158,19 +158,23 @@ export const COURSES: Course[] = [
   },
 ];
 
+/** Курс «Педагогический марафон: путь в профессию» — на него ведёт кнопка «Онлайн-курсы» в «Материалах». */
+export const MARATHON_URL =
+  "https://lms.mashuk.online/listener/course_sessions/pedagogicheskii-marafon-put-pedagoga-08-24/register";
+
 /** Методические материалы: курсы и база практик. */
 export const MATERIALS: { title: string; description: string; url: string; label: string }[] = [
   {
     title: "Педагогический марафон: путь в профессию",
     description: "Онлайн-курс для педагогов: адаптация в профессии, первые шаги и поддержка наставников.",
-    url: "https://lms.mashuk.online/listener/course_sessions/pedagogicheskii-marafon-put-pedagoga-08-24/register",
+    url: MARATHON_URL,
     label: "Изучать",
   },
   {
     title: "База лучших наставнических практик",
     description:
       "База-реестр лучших наставнических практик сформирована из числа победителей федерального конкурса «Наставничество» в рамках исполнения поручения Президента о создании на базе Центра знаний «Машук» федерального методического центра по развитию института наставничества.",
-    url: "https://mashuk.online/bestpractice",
+    url: "/bestpractice",
     label: "Изучать",
   },
 ];

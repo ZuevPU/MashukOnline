@@ -180,6 +180,12 @@ export const FORM_META: Record<
   },
 };
 
+/** «Показывать все» — с запасом больше любого реального числа заявок формы. */
+export const ALL_LIMIT = 10_000;
+
+/** Варианты «Показывать по» в списке заявок. */
+export const PAGE_SIZES = [10, 50, 100] as const;
+
 export function isFormId(value: string): value is FormId {
   return value === "apply" || value === "info" || value === "muni" || value === "media" || value === "cultistud";
 }
@@ -203,7 +209,7 @@ export function parseFilters(form: FormId, sp: Record<string, string | string[] 
     dateFrom: pick("dateFrom"),
     dateTo: pick("dateTo"),
     page: intParam(pick("page"), 1, 1, 100000),
-    limit: intParam(pick("limit"), 50, 10, 100),
+    limit: pick("limit") === "all" ? ALL_LIMIT : intParam(pick("limit"), 50, 10, 100),
     trashed: ["1", "true", "yes"].includes(pick("trashed").toLowerCase()),
     sort,
     order: pick("order").toLowerCase() === "asc" ? "asc" : "desc",

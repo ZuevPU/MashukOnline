@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { requireAdminArea } from "@/lib/admin";
 import {
+  ALL_LIMIT,
   FORM_META,
+  PAGE_SIZES,
   isFormId,
   listApplications,
   listStreams,
@@ -31,7 +33,7 @@ function buildQuery(
   overrides: Record<string, string>,
 ): string {
   const params = new URLSearchParams();
-  const keep = ["q", "stream", "dateFrom", "dateTo", "trashed", "sort", "order"];
+  const keep = ["q", "stream", "dateFrom", "dateTo", "trashed", "sort", "order", "limit"];
   for (const key of keep) {
     const value = sp[key];
     const v = Array.isArray(value) ? value[0] : value;
@@ -52,10 +54,15 @@ export default async function ApplicationsPage({ searchParams }: PageProps) {
   const rawForm = Array.isArray(sp.form) ? sp.form[0] : sp.form;
   const form: FormId = rawForm && isFormId(rawForm) ? rawForm : "apply";
   const filters = parseFilters(form, sp);
-  const [{ rows, total, page, pages }, streams] = await Promise.all([
+  const [{ rows, total, page, pages, limit }, streams] = await Promise.all([
     listApplications(form, filters),
     listStreams(form),
   ]);
+
+  const sizeOptions = [
+    ...PAGE_SIZES.map((size) => ({ value: String(size), label: String(size), on: limit === size })),
+    { value: "all", label: "Все", on: limit === ALL_LIMIT },
+  ];
 
   const inputClass =
     "min-h-10 rounded-field border border-[var(--line)] bg-white px-3 text-ui text-ink outline-none focus:border-navy";
@@ -143,6 +150,22 @@ export default async function ApplicationsPage({ searchParams }: PageProps) {
         <span className="ml-auto text-meta text-ink-soft">Всего: {total}</span>
       </form>
 
+      <nav aria-label="Сколько заявок показывать" className="flex flex-wrap items-center gap-2 text-meta">
+        <span className="text-ink-soft">Показывать по:</span>
+        {sizeOptions.map((option) => (
+          <Link
+            key={option.value}
+            href={buildQuery(form, sp, { limit: option.value, page: "" })}
+            aria-current={option.on ? "true" : undefined}
+            className={`rounded-full px-3.5 py-1.5 font-semibold no-underline ${
+              option.on ? "bg-navy text-white" : "bg-white text-ink-soft hover:text-navy"
+            }`}
+          >
+            {option.label}
+          </Link>
+        ))}
+      </nav>
+
       {rows.length === 0 ? (
         <p className="m-0 rounded-soft border border-[var(--line)] bg-white px-6 py-5 text-ui text-ink-soft">
           Заявок нет.
@@ -152,6 +175,7 @@ export default async function ApplicationsPage({ searchParams }: PageProps) {
           <table className="w-full border-collapse text-ui">
             <thead>
               <tr className="border-b border-[var(--line)] text-left text-caption uppercase tracking-wide text-ink-soft">
+                <th className="w-12 px-4 py-3 text-right">№</th>
                 <th className="px-4 py-3">Дата</th>
                 {rows[0].columns.map((c) => (
                   <th key={c.key} className="px-4 py-3">
@@ -162,8 +186,9 @@ export default async function ApplicationsPage({ searchParams }: PageProps) {
               </tr>
             </thead>
             <tbody>
-              {rows.map((row) => (
+              {rows.map((row, index) => (
                 <tr key={row.id} className="border-b border-[var(--line-soft)] last:border-0 hover:bg-sky-tint/40">
+                  <td className="px-4 py-3 text-right text-ink-soft tabular-nums">{(page - 1) * limit + index + 1}</td>
                   <td className="px-4 py-3 text-ink-soft">{new Date(row.created_at).toLocaleDateString("ru-RU")}</td>
                   {row.columns.map((c) => (
                     <td key={c.key} className="px-4 py-3 text-ink">

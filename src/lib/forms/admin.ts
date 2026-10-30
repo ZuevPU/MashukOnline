@@ -441,7 +441,8 @@ export async function formCounts(form: FormId): Promise<FormCounts> {
   const [row] = await db
     .select({
       total: sql<number>`count(*)::int`,
-      week: sql<number>`count(*) filter (where ${t.createdAt} >= ${weekAgo})::int`,
+      // Дату передаём строкой: драйвер (prepare: false) не сериализует Date в сыром sql
+      week: sql<number>`count(*) filter (where ${t.createdAt} >= ${weekAgo.toISOString()}::timestamptz)::int`,
       last: sql<Date | null>`max(${t.createdAt})`,
     })
     .from(t)

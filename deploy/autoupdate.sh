@@ -8,6 +8,10 @@
 set -euo pipefail
 
 cd /opt/mashuk || exit 1
+
+# Один запуск за раз: ручной вызов и cron не должны пересоздавать контейнеры одновременно
+exec 9>/tmp/mashuk-autoupdate.lock
+flock -n 9 || exit 0
 # shellcheck disable=SC1091
 set -a; . ./.env; set +a
 

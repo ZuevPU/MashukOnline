@@ -12,6 +12,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "tsx scripts/seed.ts",
     "migrate:legacy": "tsx scripts/migrate-legacy.ts",
+    "fetch:legacy-files": "tsx scripts/fetch-legacy-files.ts",
     "smoke": "node scripts/smoke.mjs",
     "shots": "node scripts/shots.mjs",
     "audit:design": "node scripts/design-audit.mjs",

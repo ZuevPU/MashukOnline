@@ -24,6 +24,24 @@ const nextConfig: NextConfig = {
       "./src/assets/fonts/noto-serif/**/*",
     ],
   },
+  // Адреса старого сайта на Tilda: ссылки на них разосланы и опубликованы, поэтому
+  // открываем по ним страницы портала, не меняя адрес в строке браузера.
+  async rewrites() {
+    return {
+      beforeFiles: [
+        { source: "/privacypolicy", destination: "/privacy" },
+        { source: "/interethnic", destination: "/apply" },
+        { source: "/educationatitsbest", destination: "/info" },
+        { source: "/educationatpeak", destination: "/events/seminar" },
+        { source: "/mediacompetencies", destination: "/events/media" },
+        { source: "/municipalharmony", destination: "/muni" },
+        { source: "/cultistudform", destination: "/cultistud" },
+        { source: "/edu", destination: "/" },
+      ],
+      afterFiles: [],
+      fallback: [],
+    };
+  },
   // Долгий кэш публичных медиафайлов (обложки курсов, бренд).
   async headers() {
     const week = [{ key: "Cache-Control", value: "public, max-age=604800, stale-while-revalidate=86400" }];

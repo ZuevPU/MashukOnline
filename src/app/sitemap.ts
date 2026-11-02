@@ -11,6 +11,8 @@ const PAGES: { path: string; priority: number; changeFrequency: MetadataRoute.Si
   { path: "/apply", priority: 0.7, changeFrequency: "monthly" },
   { path: "/info", priority: 0.5, changeFrequency: "monthly" },
   { path: "/muni", priority: 0.5, changeFrequency: "monthly" },
+  { path: "/metod", priority: 0.6, changeFrequency: "monthly" },
+  { path: "/regional-summit", priority: 0.6, changeFrequency: "monthly" },
   { path: "/support", priority: 0.4, changeFrequency: "yearly" },
   { path: "/privacy", priority: 0.3, changeFrequency: "yearly" },
 ];

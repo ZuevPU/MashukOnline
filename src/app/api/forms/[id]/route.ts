@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { gateOpen } from "@/lib/forms/gate";
 import { SubmitError, submitForm, FORM_CONFIGS } from "@/lib/forms/submit";
 import type { FormConfig } from "@/lib/forms/types";
 
@@ -54,6 +55,10 @@ export async function POST(
     formData = await request.formData();
   } catch {
     return NextResponse.json({ error: "Некорректная форма" }, { status: 400 });
+  }
+
+  if (!(await gateOpen(id as FormConfig["id"]))) {
+    return NextResponse.json({ error: "Нужен пароль формы — обновите страницу" }, { status: 403 });
   }
 
   // Ловушка для ботов: скрытое поле должно остаться пустым.

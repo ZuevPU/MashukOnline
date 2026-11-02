@@ -133,7 +133,8 @@ export const muniConfig: FormConfig = {
           name: "stream",
           label: "Выберите даты участия в соответствии с датами в полученном приглашении",
           type: "radio",
-          options: opts("13 – 16 ноября 2026 года"),
+          // Как в старой форме — чтобы фильтр «Поток» объединял старые и новые заявки
+          options: opts("13 — 16 ноября 2026"),
         },
         {
           name: "colleagues",
@@ -147,59 +148,9 @@ export const muniConfig: FormConfig = {
         },
       ],
     },
-    {
-      title: "Согласие и паспортные данные",
-      fields: [
-        {
-          name: "address",
-          label: "Адрес регистрации",
-          hint: "нужен для автозаполнения бланка",
-          type: "text",
-          maxLength: 400,
-          wide: true,
-        },
-        {
-          name: "passport_series",
-          label: "Серия паспорта",
-          hint: "Необязательно: эти поля попадут в PDF-бланк",
-          type: "text",
-          maxLength: 40,
-        },
-        {
-          name: "passport_number",
-          label: "Номер паспорта",
-          hint: "Необязательно: эти поля попадут в PDF-бланк",
-          type: "text",
-          maxLength: 40,
-        },
-        {
-          name: "passport_issued",
-          label: "Кем и когда выдан",
-          type: "text",
-          maxLength: 400,
-          wide: true,
-        },
-        {
-          name: "consent_confirm",
-          label:
-            "Подтверждаю, что подписал(а) согласие и загружаю подписанный документ",
-          type: "checkboxes",
-          options: opts("Да"),
-          required: true,
-        },
-      ],
-    },
   ],
-  files: [
-    {
-      name: "consent_file",
-      label: "Прикрепите подписанное согласие",
-      hint: "PDF или фото, не более 20 МБ",
-      accept: ".pdf,.jpg,.jpeg,.png,.doc,.docx",
-      required: true,
-    },
-  ],
-  consents: { kind: "muni-pdf" },
+  // Согласие и паспортные данные из анкеты убраны по просьбе организаторов (2026-11-02)
+  files: [],
   submitLabel: "Отправить заявку",
   successTitle: "Готово",
   successText: "Спасибо! Заявка отправлена.",

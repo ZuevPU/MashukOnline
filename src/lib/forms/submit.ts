@@ -288,7 +288,7 @@ export async function submitForm(
   }
 
   // muni
-  await validateMuni(data);
+  await validatePerson(data);
   const rows = await db
     .insert(schema.municipalApplications)
     .values({
@@ -358,13 +358,6 @@ async function validatePerson(data: Record<string, unknown>): Promise<void> {
   if (!validInn(str(data, "inn"))) throw new SubmitError("Укажите корректный ИНН");
   if (!validEmail(str(data, "email"))) throw new SubmitError("Укажите корректный e-mail");
   if (!validRegion(str(data, "region"))) throw new SubmitError("Выберите регион из списка");
-}
-
-async function validateMuni(data: Record<string, unknown>): Promise<void> {
-  await validatePerson(data);
-  if (!["Да", "да"].includes(str(data, "consent_confirm", 20))) {
-    throw new SubmitError("Подтвердите подписание согласия");
-  }
 }
 
 async function validateMedia(data: Record<string, unknown>): Promise<void> {

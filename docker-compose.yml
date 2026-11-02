@@ -78,6 +78,8 @@ services:
       OAUTH_REDIRECT_URIS: ${OAUTH_REDIRECT_URIS:-}
       OAUTH_SIGNING_SECRET: ${OAUTH_SIGNING_SECRET:-}
       ALLOW_INSECURE_COOKIES: ${ALLOW_INSECURE_COOKIES:-}
+      # Пароль на форму муниципалитетов (/municipalharmony); пусто — форма открыта
+      MUNI_FORM_PASSWORD: ${MUNI_FORM_PASSWORD:-}
       # Уведомления об обращениях в техподдержку в Telegram
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}

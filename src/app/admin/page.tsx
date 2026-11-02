@@ -15,24 +15,24 @@ const PAGES: { href: string; title: string; note: string }[] = [
   { href: "/", title: "Главная «Цифровой Машук»", note: "Витрина, преимущества, материалы, форма поддержки" },
   { href: "/courses", title: "Программы обучения", note: "Карточки онлайн-курсов со ссылками на LMS" },
   { href: "/bestpractice", title: "База лучших наставнических практик", note: "100 практик — победителей конкурса «Наставничество»" },
-  { href: "/events/seminar", title: "Семинар «Образование на высоте»", note: "Лендинг мероприятия" },
-  { href: "/events/media", title: "Медиамероприятие", note: "Лендинг «Медиакомпетенции в сфере межнациональных отношений»" },
+  { href: "/educationatpeak", title: "Семинар «Образование на высоте»", note: "Лендинг мероприятия" },
+  { href: "/mediacompetencies", title: "Медиамероприятие", note: "Лендинг «Медиакомпетенции в сфере межнациональных отношений»" },
   { href: "/results/education-height", title: "Итоги «Образование на высоте»", note: "Результаты программы" },
   { href: "/metod", title: "Методические материалы", note: "«ПРО Образование», видеоинструкция" },
   { href: "/regional-summit", title: "Совещание региональных министров", note: "Лендинг, 14–16 апреля 2026" },
   { href: "/aihub", title: "База знаний для работы с ИИ", note: "Раздел готовится" },
   { href: "/poll", title: "Живые опросы", note: "Вход в опрос по коду" },
   { href: "/support", title: "Техническая поддержка", note: "Форма обращения" },
-  { href: "/privacy", title: "Политика конфиденциальности", note: "Обработка персональных данных" },
+  { href: "/privacypolicy", title: "Политика конфиденциальности", note: "Обработка персональных данных" },
 ];
 
-/** Формы заявок: публичный адрес и раздел в админке. */
+/** Формы заявок: публичный адрес (как на старом сайте — эти ссылки разосланы) и раздел в админке. */
 const FORMS: { id: FormId; href: string }[] = [
-  { id: "apply", href: "/apply" },
-  { id: "info", href: "/info" },
-  { id: "muni", href: "/muni" },
+  { id: "apply", href: "/interethnic" },
+  { id: "info", href: "/educationatitsbest" },
+  { id: "muni", href: "/municipalharmony" },
   { id: "media", href: "/events/media/apply" },
-  { id: "cultistud", href: "/cultistud" },
+  { id: "cultistud", href: "/cultistudform" },
 ];
 
 const EXTERNAL: { href: string; title: string; note: string }[] = [
@@ -78,6 +78,7 @@ export default async function AdminOverview() {
                 Всего: <b className="text-ink">{counts[index].total}</b> · за неделю:{" "}
                 <b className="text-ink">{counts[index].week}</b> · {formatDate(counts[index].last)}
               </span>
+              <span className="text-caption text-ink-faint">mashuk.online{form.href}</span>
               <span className="mt-auto flex flex-wrap gap-2 text-meta">
                 <Link href={`/admin/applications?form=${form.id}`} className={PRIMARY}>
                   Заявки

@@ -4,7 +4,6 @@ import { MountainLine } from "@/components/brand/MountainLine";
 import { CourseCard } from "@/components/courses/CourseCard";
 import { SupportForm } from "@/components/site/SupportForm";
 import { COURSES, MARATHON_URL } from "@/lib/courses";
-import { DIRECTIONS } from "@/lib/types";
 
 const ADVANTAGES = [
   {
@@ -95,24 +94,6 @@ export default function HomePage() {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {COURSES.map((course) => (
               <CourseCard key={course.slug} course={course} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ----------------------------------------------------------- НАПРАВЛЕНИЯ */}
-      <section className="section pt-0">
-        <div className="wrap">
-          <p className="eyebrow">Направления</p>
-          <h2 className="section-title section-title--tight mb-6">Куда двигаться дальше</h2>
-          <div className="flex flex-wrap gap-2.5">
-            {DIRECTIONS.map((direction) => (
-              <span
-                key={direction.key}
-                className="rounded-full border border-[var(--line)] bg-white px-4 py-2 text-meta text-navy"
-              >
-                {direction.label}
-              </span>
             ))}
           </div>
         </div>

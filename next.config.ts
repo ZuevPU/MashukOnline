@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { BUILD_SHORT_LINKS } from "./src/lib/short-links";
 
 const nextConfig: NextConfig = {
   // Сборка для Docker: рантайм берётся из .next/standalone (нужен только Node)
@@ -37,6 +38,11 @@ const nextConfig: NextConfig = {
         { source: "/municipalharmony", destination: "/muni" },
         { source: "/cultistudform", destination: "/cultistud" },
         { source: "/edu", destination: "/" },
+        // Короткие адреса авторских сборок программ (mashuk.online/rnd26)
+        ...Object.entries(BUILD_SHORT_LINKS).flatMap(([slug, short]) => [
+          { source: short, destination: `/programs/${slug}/build/index.html` },
+          { source: `${short}/:path+`, destination: `/programs/${slug}/build/:path+` },
+        ]),
       ],
       afterFiles: [],
       fallback: [],

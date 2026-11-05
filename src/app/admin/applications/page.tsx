@@ -93,6 +93,9 @@ export default async function ApplicationsPage({ searchParams }: PageProps) {
   if (filters.dateFrom) exportParams.set("dateFrom", filters.dateFrom);
   if (filters.dateTo) exportParams.set("dateTo", filters.dateTo);
   if (filters.trashed) exportParams.set("trashed", "1");
+  if (filters.files !== "all") exportParams.set("files", filters.files);
+  if (filters.sort) exportParams.set("sort", filters.sort);
+  if (filters.order) exportParams.set("order", filters.order);
 
   return (
     <div className="wrap flex flex-col gap-6">

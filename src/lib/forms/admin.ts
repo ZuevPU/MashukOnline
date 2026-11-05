@@ -435,6 +435,13 @@ export async function allApplications(form: FormId, f: AppFilters): Promise<Reco
   if (f.stream) conds.push(eq(t.stream, f.stream));
   if (f.dateFrom) conds.push(sql`${t.createdAt}::date >= ${f.dateFrom}`);
   if (f.dateTo) conds.push(sql`${t.createdAt}::date <= ${f.dateTo}`);
+  if (f.files !== "all") {
+    const fileCols = FORM_META[form].fileColumns.map((file) => t[camel(file.column)]).filter(Boolean);
+    if (fileCols.length) {
+      const anyFile = or(...fileCols.map((col) => isNotNull(col)))!;
+      conds.push(f.files === "yes" ? anyFile : not(anyFile));
+    }
+  }
   const sortColumn = t[SORTABLE[form][f.sort]];
   const result = (await db
     .select()

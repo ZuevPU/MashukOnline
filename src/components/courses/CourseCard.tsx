@@ -1,5 +1,6 @@
 import Image from "next/image";
 import {
+  BookOpen,
   Compass,
   Cpu,
   Film,
@@ -18,6 +19,7 @@ import { SEASONS } from "@/lib/brand";
 import type { Course } from "@/lib/courses";
 
 const ICONS: Record<string, LucideIcon> = {
+  book: BookOpen,
   film: Film,
   shield: ShieldCheck,
   route: Route,

@@ -25,6 +25,17 @@ export interface Course {
 
 export const COURSES: Course[] = [
   {
+    slug: "russkii-kod",
+    title: "Русский код: культура, идентичность, слово",
+    description:
+      "«Русский код» — просветительский онлайн-курс Центра знаний «Машук» о связи культуры, языка и человека. Пять авторских лекций приглашают проследить эту связь: от произведений классиков и историй повседневных вещей до молодёжного сленга, переписки в мессенджерах и нашего собственного выбора слов.",
+    url: "https://lms.mashuk.online/education/listener/course_sessions/russkii-kod-kultura-identichnost-slovo-11-04/register",
+    tag: "Культура и язык",
+    image: "/courses/russkii-kod.jpg",
+    icon: "book",
+    season: "autumn",
+  },
+  {
     slug: "kinopedagogika",
     title: "Кинопедагогика",
     description:
@@ -100,50 +111,6 @@ export const COURSES: Course[] = [
     image: "/courses/instrumenty-nastavnika.png",
     icon: "wrench",
     season: "summer",
-  },
-  {
-    slug: "roditelskaya-akademiya",
-    title: "Родительская Академия",
-    description:
-      "«Родительская Академия» — это пространство для диалога о семье как основе передачи культуры, идентичности и ценностей. Мы говорим о том, как в повседневных разговорах, традициях и совместных делах формируются устойчивость, доверие и уважение.",
-    url: "https://lms.mashuk.online/listener/course_sessions/roditelskaya-akademiya-04-06/register",
-    tag: "Работа с семьёй",
-    image: "/courses/roditelskaya-akademiya.jpg",
-    icon: "users",
-    season: "spring",
-  },
-  {
-    slug: "letnii-pedsovet",
-    title: "Семинар-практикум Летний ПедСовет",
-    description:
-      "Как говорить с молодёжью о ценностях без формальности и назидания? Как создавать события, которые не просто знакомят участников с культурой и историей страны, а помогают почувствовать свою причастность к ним? Как превратить городское пространство, совместную деятельность и живые истории в инструменты воспитания?",
-    url: "https://lms.mashuk.online/listener/course_sessions/seminar-praktikum-letnii-pedsovet-2026-07-24/register",
-    tag: "ПедСоветы",
-    image: "/courses/letnii-pedsovet.jpg",
-    icon: "sun",
-    season: "summer",
-  },
-  {
-    slug: "vesennii-pedsovet",
-    title: "Семинар-практикум Весенний ПедСовет",
-    description:
-      "1 мая стартует онлайн-курс по итогам «Весеннего ПедСовета». Мы собрали не сухие теории, а рабочий навигатор по цифровой педагогике: только проверенные инструменты, реальные кейсы и стратегии внедрения от экспертов, которые применяют их в школах и вузах уже сегодня.",
-    url: "https://lms.mashuk.online/listener/course_sessions/seminar-praktikum-vesennii-pedsovet-2026-05-01/register",
-    tag: "ПедСоветы",
-    image: "/courses/vesennii-pedsovet.jpg",
-    icon: "flower",
-    season: "spring",
-  },
-  {
-    slug: "zimnii-pedsovet",
-    title: "Семинар-практикум Зимний ПедСовет",
-    description:
-      "Онлайн-семинар-практикум для педагогов и студентов, где вы освоите современные инструменты работы с молодёжью через вовлечённость, уникальные методики и обмен профессиональным опытом.",
-    url: "https://lms.mashuk.online/listener/course_sessions/seminar-praktikum-zimnii-pedsovet-03-02/register",
-    tag: "ПедСоветы",
-    image: "/courses/zimnii-pedsovet.jpg",
-    icon: "snow",
-    season: "winter",
   },
   {
     slug: "vvedenie-v-spetsialnost",

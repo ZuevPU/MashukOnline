@@ -12,6 +12,7 @@ import {
   listApplications,
   listStreams,
   parseFilters,
+  sortOptions,
 } from "@/lib/forms/admin";
 import type { FormId } from "@/lib/forms/admin";
 
@@ -37,7 +38,7 @@ function buildQuery(
   overrides: Record<string, string>,
 ): string {
   const params = new URLSearchParams();
-  const keep = ["q", "stream", "dateFrom", "dateTo", "trashed", "sort", "order", "limit"];
+  const keep = ["q", "stream", "dateFrom", "dateTo", "trashed", "files", "sort", "order", "limit"];
   for (const key of keep) {
     const value = sp[key];
     const v = Array.isArray(value) ? value[0] : value;
@@ -75,6 +76,17 @@ export default async function ApplicationsPage({ searchParams }: PageProps) {
 
   const inputClass =
     "min-h-10 rounded-field border border-[var(--line)] bg-white px-3 text-ui text-ink outline-none focus:border-navy";
+  const sortFields = sortOptions(form);
+  const sortKeys = new Set(sortFields.map((option) => option.key));
+  // Клик по заголовку: первый раз — по убыванию, повторный — по возрастанию
+  const sortHref = (key: string) =>
+    buildQuery(form, sp, {
+      sort: key,
+      order: filters.sort === key && filters.order === "desc" ? "asc" : "desc",
+      page: "",
+    });
+  const sortMark = (key: string) =>
+    filters.sort === key ? (filters.order === "asc" ? " ↑" : " ↓") : "";
   const exportParams = new URLSearchParams();
   if (filters.q) exportParams.set("q", filters.q);
   if (filters.stream) exportParams.set("stream", filters.stream);
@@ -147,6 +159,31 @@ export default async function ApplicationsPage({ searchParams }: PageProps) {
           По дату
           <input className={inputClass} type="date" name="dateTo" defaultValue={filters.dateTo} />
         </label>
+        <label className="flex flex-col gap-1 text-caption text-ink-soft">
+          Файлы
+          <select className={inputClass} name="files" defaultValue={filters.files}>
+            <option value="">Все</option>
+            <option value="yes">Есть вложения</option>
+            <option value="no">Без вложений</option>
+          </select>
+        </label>
+        <label className="flex flex-col gap-1 text-caption text-ink-soft">
+          Сортировка
+          <select className={inputClass} name="sort" defaultValue={filters.sort}>
+            {sortFields.map((option) => (
+              <option key={option.key} value={option.key}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="flex flex-col gap-1 text-caption text-ink-soft">
+          Порядок
+          <select className={inputClass} name="order" defaultValue={filters.order}>
+            <option value="desc">По убыванию</option>
+            <option value="asc">По возрастанию</option>
+          </select>
+        </label>
         <label className="flex items-center gap-2 text-meta text-ink-soft">
           <input type="checkbox" name="trashed" value="1" defaultChecked={filters.trashed} />
           Корзина
@@ -189,13 +226,23 @@ export default async function ApplicationsPage({ searchParams }: PageProps) {
             <thead>
               <tr className="border-b border-[var(--line)] text-left text-caption uppercase tracking-wide text-ink-soft">
                 <th className="w-12 px-4 py-3 text-right">№</th>
-                <th className="px-4 py-3">Дата</th>
+                <th className="px-4 py-3">
+                  <Link href={sortHref("created_at")} className="text-ink-soft no-underline hover:text-navy">
+                    Дата{sortMark("created_at")}
+                  </Link>
+                </th>
                 {rows[0].columns.map((c) => (
                   <th key={c.key} className="px-4 py-3">
-                    {LABELS[c.key] ?? c.key}
+                    {sortKeys.has(c.key) ? (
+                      <Link href={sortHref(c.key)} className="text-ink-soft no-underline hover:text-navy">
+                        {LABELS[c.key] ?? c.key}
+                        {sortMark(c.key)}
+                      </Link>
+                    ) : (
+                      (LABELS[c.key] ?? c.key)
+                    )}
                   </th>
                 ))}
-                <th className="px-4 py-3">Файлы</th>
               </tr>
             </thead>
             <tbody>
@@ -210,7 +257,6 @@ export default async function ApplicationsPage({ searchParams }: PageProps) {
                       </Link>
                     </td>
                   ))}
-                  <td className="px-4 py-3">{row.hasFiles ? "есть" : "—"}</td>
                 </tr>
               ))}
             </tbody>

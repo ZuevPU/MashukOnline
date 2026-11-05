@@ -1,4 +1,4 @@
-import { and, desc, asc, eq, ilike, isNull, isNotNull, or, sql } from "drizzle-orm";
+import { and, desc, asc, eq, ilike, isNull, isNotNull, not, or, sql } from "drizzle-orm";
 import { getDb, schema } from "../db/client";
 
 /**
@@ -16,6 +16,8 @@ export interface AppFilters {
   page: number;
   limit: number;
   trashed: boolean;
+  /** Наличие прикреплённых файлов: все / только с файлами / только без файлов */
+  files: "all" | "yes" | "no";
   sort: string;
   order: "asc" | "desc";
 }
@@ -203,6 +205,7 @@ export function parseFilters(form: FormId, sp: Record<string, string | string[] 
   };
   const sortKey = pick("sort");
   const sort = SORTABLE[form][sortKey] ? sortKey : "created_at";
+  const filesRaw = pick("files").toLowerCase();
   return {
     q: pick("q"),
     stream: pick("stream"),
@@ -211,9 +214,25 @@ export function parseFilters(form: FormId, sp: Record<string, string | string[] 
     page: intParam(pick("page"), 1, 1, 100000),
     limit: pick("limit") === "all" ? ALL_LIMIT : intParam(pick("limit"), 50, 10, 100),
     trashed: ["1", "true", "yes"].includes(pick("trashed").toLowerCase()),
+    files: filesRaw === "yes" || filesRaw === "no" ? (filesRaw as "yes" | "no") : "all",
     sort,
     order: pick("order").toLowerCase() === "asc" ? "asc" : "desc",
   };
+}
+
+/** Подписи сортируемых полей для выпадающего списка в админке. */
+export const SORT_LABELS: Record<string, string> = {
+  created_at: "Дата заявки",
+  fio: "ФИО",
+  email: "E-mail",
+  stream: "Поток",
+  country: "Страна",
+  region: "Регион",
+};
+
+/** Список сортировок, доступных конкретной форме. */
+export function sortOptions(form: FormId): { key: string; label: string }[] {
+  return Object.keys(SORTABLE[form]).map((key) => ({ key, label: SORT_LABELS[key] ?? key }));
 }
 
 export interface ListRow {
@@ -279,6 +298,11 @@ function snake(key: string): string {
   return key.replace(/([A-Z])/g, (m) => "_" + m.toLowerCase());
 }
 
+/** Обратное преобразование: имя колонки в базе → свойство drizzle. */
+function camel(key: string): string {
+  return key.replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
+}
+
 function snakeRow(row: Record<string, unknown>): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(row)) out[snake(key)] = value;
@@ -307,6 +331,14 @@ export async function listApplications(form: FormId, f: AppFilters): Promise<Lis
   if (f.stream) conds.push(eq(t.stream, f.stream));
   if (f.dateFrom) conds.push(sql`${t.createdAt}::date >= ${f.dateFrom}`);
   if (f.dateTo) conds.push(sql`${t.createdAt}::date <= ${f.dateTo}`);
+  // Фильтр по наличию файлов: колонки берём из описания формы
+  if (f.files !== "all") {
+    const fileCols = FORM_META[form].fileColumns.map((file) => t[camel(file.column)]).filter(Boolean);
+    if (fileCols.length) {
+      const anyFile = or(...fileCols.map((col) => isNotNull(col)))!;
+      conds.push(f.files === "yes" ? anyFile : not(anyFile));
+    }
+  }
   const where = and(...conds);
 
   const offset = (f.page - 1) * f.limit;

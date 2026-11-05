@@ -5,6 +5,7 @@
  */
 export const BUILD_SHORT_LINKS: Record<string, string> = {
   rnd26: "/rnd26",
+  muni26: "/muni26",
 };
 
 /** Публичный адрес файла сборки: короткий, если он задан. */

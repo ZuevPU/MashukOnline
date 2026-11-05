@@ -48,7 +48,9 @@ fi
 
 echo "[$(date -Is)] Обновление: конфигурация=$cfg_changed образ=$img_changed"
 $COMPOSE run --rm tools pnpm db:migrate
-$COMPOSE up -d --remove-orphans
+# Профиль metrics обязателен: без него autoupdate удалит контейнеры мониторинга
+# как «осиротевшие» (--remove-orphans), и они не вернутся до ручного запуска.
+$COMPOSE --profile metrics up -d --remove-orphans
 # Caddyfile подключён как том — при его изменении нужен перезапуск Caddy
 $COMPOSE restart caddy >/dev/null 2>&1 || true
 docker image prune -f >/dev/null 2>&1 || true

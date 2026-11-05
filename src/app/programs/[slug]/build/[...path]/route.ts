@@ -1,84 +1,77 @@
-﻿import { NextResponse } from "next/server";
-import { getViewer } from "@/lib/auth";
-import { buildBySlug } from "@/lib/db/queries";
+import { NextResponse } from "next/server";
 import { readBuildFile } from "@/lib/build-storage";
-import { BUILD_SHORT_LINKS } from "@/lib/short-links";
+import { buildBySlug } from "@/lib/db/queries";
+import { canViewBuild } from "@/lib/program-gate";
+import { BUILD_SHORT_LINKS, buildUrl } from "@/lib/short-links";
 
-/**
- * РђРІС‚РѕСЂСЃРєР°СЏ СЃР±РѕСЂРєР° РїСЂРѕРіСЂР°РјРјС‹ вЂ” С‚РѕР»СЊРєРѕ РґР»СЏ СѓС‡Р°СЃС‚РЅРёРєРѕРІ РїСЂРѕРіСЂР°РјРјС‹.
- * Р‘РµР· РїСѓС‚Рё РѕС‚РєСЂС‹РІР°РµС‚СЃСЏ index.html: РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅС‹Рµ СЃСЃС‹Р»РєРё РІРЅСѓС‚СЂРё СЃР±РѕСЂРєРё
- * (style.css, img/вЂ¦) СЂР°Р±РѕС‚Р°СЋС‚ РєР°Рє РЅР° РѕР±С‹С‡РЅРѕРј СЃР°Р№С‚Рµ.
- */
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ slug: string; path?: string[] }> },
-) {
-  const { slug, path = [] } = await params;
-
-  if (path.length === 0) {
-    return NextResponse.redirect(new URL(`/programs/${slug}/build/index.html`, request.url));
-  }
-
-  const [viewer, build] = await Promise.all([getViewer(slug), buildBySlug(slug)]);
-  if (!viewer || !build) {
-    return NextResponse.redirect(new URL(`/programs/${slug}/enter`, request.url));
-  }
-  if (build.version === null) return new NextResponse("РЎР±РѕСЂРєР° РЅРµ Р·Р°РіСЂСѓР¶РµРЅР°", { status: 404 });
-
-  // Р¤Р°Р№Р» РїРѕ РѕРґРЅРѕРјСѓ РїСѓС‚Рё РјРµРЅСЏРµС‚СЃСЏ С‚РѕР»СЊРєРѕ СЃ РЅРѕРІРѕР№ РІРµСЂСЃРёРµР№ СЃР±РѕСЂРєРё вЂ” РІРµСЂСЃРёСЏ Рё РµСЃС‚СЊ ETag
-  const etag = `"b${build.version}"`;
-  const privateCache = "private, no-cache";
-  if (request.headers.get("if-none-match") === etag) {
-    return new NextResponse(null, { status: 304, headers: { etag, "cache-control": privateCache } });
-  }
-
-  const file = await readBuildFile(build.programId, build.version, path.map(safeDecode).join("/"));
-  if (!file) return new NextResponse("Р¤Р°Р№Р» РЅРµ РЅР°Р№РґРµРЅ", { status: 404 });
-
-  const raw = file.contentType.startsWith("text/html")
-    ? withBaseHref(file.bytes, buildBase(slug))
-    : file.bytes;
-  const body = new Uint8Array(raw);
-
-  return new NextResponse(body, {
-    headers: {
-      "content-type": file.contentType,
-      etag,
-      // Р—Р°РєСЂС‹С‚С‹Р№ РєРѕРЅС‚РµРЅС‚: С…СЂР°РЅРёС‚СЃСЏ С‚РѕР»СЊРєРѕ РІ Р±СЂР°СѓР·РµСЂРµ СѓС‡Р°СЃС‚РЅРёРєР° Рё СЃРІРµСЂСЏРµС‚СЃСЏ РїРѕ ETag
-      "cache-control": privateCache,
-      "x-content-type-options": "nosniff",
-      "x-frame-options": "SAMEORIGIN",
-      "referrer-policy": "same-origin",
-    },
-  });
-}
-
-/** РЎРµРіРјРµРЅС‚С‹ РјРѕРіСѓС‚ РїСЂРёР№С‚Рё Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹РјРё (РєРёСЂРёР»Р»РёС†Р° РІ РёРјРµРЅР°С… С„Р°Р№Р»РѕРІ). */
-function safeDecode(segment: string): string {
+/** Сегменты могут прийти и закодированными, и уже раскодированными. */
+function safeDecode(part: string): string {
   try {
-    return decodeURIComponent(segment);
+    return decodeURIComponent(part);
   } catch {
-    return segment;
+    return part;
   }
 }
 
 /**
- * Р‘Р°Р·РѕРІС‹Р№ Р°РґСЂРµСЃ СЃР±РѕСЂРєРё РґР»СЏ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅС‹С… СЃСЃС‹Р»РѕРє РІРЅСѓС‚СЂРё HTML.
+ * База для относительных ссылок внутри HTML сборки.
  *
- * РЎР±РѕСЂРєСѓ РѕС‚РєСЂС‹РІР°СЋС‚ Рё РїРѕ РєРѕСЂРѕС‚РєРѕРјСѓ Р°РґСЂРµСЃСѓ (`/muni26`), Рё РїРѕ РґР»РёРЅРЅРѕРјСѓ
- * (`/programs/muni26/build/index.html`). Р‘РµР· <base> Р±СЂР°СѓР·РµСЂ СЃС‡РёС‚Р°РµС‚ Р±Р°Р·РѕР№
- * РєР°С‚Р°Р»РѕРі С‚РµРєСѓС‰РµРіРѕ Р°РґСЂРµСЃР°: РґР»СЏ `/muni26` СЌС‚Рѕ РєРѕСЂРµРЅСЊ СЃР°Р№С‚Р°, Рё `style.css`
- * СѓРµР·Р¶Р°РµС‚ РІ 404 вЂ” СЃС‚СЂР°РЅРёС†Р° РїСЂРёС…РѕРґРёС‚ Р±РµР· СЃС‚РёР»РµР№ Рё РєР°СЂС‚РёРЅРѕРє.
+ * Сборку открывают и по короткому адресу (`/muni26`), и по длинному
+ * (`/programs/muni26/build/index.html`). Без <base> браузер берёт каталог
+ * текущего адреса: для `/muni26` это корень сайта, и `style.css` уезжает в 404 —
+ * страница приходит без стилей и картинок.
  */
 function buildBase(slug: string): string {
   const short = BUILD_SHORT_LINKS[slug];
   return short ? `${short}/` : `/programs/${encodeURIComponent(slug)}/build/`;
 }
 
-/** Р’СЃС‚Р°РІР»СЏРµС‚ <base href> РІ HTML СЃР±РѕСЂРєРё, РµСЃР»Рё Р°РІС‚РѕСЂ РЅРµ Р·Р°РґР°Р» РµРіРѕ СЃР°Рј. */
+/** Вставляет <base href> в HTML, если автор сборки не задал его сам. */
 function withBaseHref(bytes: Uint8Array, base: string): Uint8Array {
   const html = new TextDecoder().decode(bytes);
   if (/<base\s/i.test(html)) return bytes;
-  const withBase = html.replace(/<head(\s[^>]*)?>/i, (tag) => `${tag}<base href="${base}">`);
-  return new TextEncoder().encode(withBase);
+  return new TextEncoder().encode(html.replace(/<head(\s[^>]*)?>/i, (tag) => `${tag}<base href="${base}">`));
+}
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+/**
+ * Файлы авторской сборки: /programs/<slug>/build/<путь>.
+ * Без доступа страница сборки уводит на ввод пароля программы, остальные файлы — 403.
+ */
+export async function GET(
+  _request: Request,
+  { params }: { params: Promise<{ slug: string; path: string[] }> },
+) {
+  const { slug, path } = await params;
+  const relative = path.map(safeDecode).join("/") || "index.html";
+
+  const build = await buildBySlug(slug);
+  if (!build?.version) return new NextResponse("Not found", { status: 404 });
+
+  const isPage = /\.html?$/i.test(relative);
+  if (!(await canViewBuild(slug))) {
+    if (!isPage) return new NextResponse("Forbidden", { status: 403 });
+    const next = buildUrl(slug, relative);
+    return new NextResponse(null, {
+      status: 303,
+      headers: { Location: `/programs/${slug}/unlock?next=${encodeURIComponent(next)}`, "Cache-Control": "no-store" },
+    });
+  }
+
+  const file = await readBuildFile(build.programId, build.version, relative);
+  if (!file) return new NextResponse("Not found", { status: 404 });
+
+  const raw = file.contentType.startsWith("text/html") ? withBaseHref(file.bytes, buildBase(slug)) : file.bytes;
+  const body = new Uint8Array(raw);
+
+  return new NextResponse(body, {
+    headers: {
+      "Content-Type": file.contentType,
+      // Закрытое содержимое: только в браузере участника, страницы — без кэша
+      "Cache-Control": isPage ? "private, no-store" : "private, max-age=3600",
+      "X-Robots-Tag": "noindex, nofollow",
+    },
+  });
 }

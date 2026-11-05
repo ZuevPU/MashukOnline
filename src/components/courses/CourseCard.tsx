@@ -15,6 +15,7 @@ import {
   Wrench,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { ButtonLink } from "@/components/ui/Button";
 import { SEASONS } from "@/lib/brand";
 import type { Course } from "@/lib/courses";
 
@@ -69,15 +70,14 @@ export function CourseCard({ course }: { course: Course }) {
         <p className="m-0 mb-5 text-meta font-light leading-relaxed text-ink-soft">
           {course.description}
         </p>
-        <a
+        <ButtonLink
           href={course.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-auto inline-flex items-center gap-2 font-semibold text-navy no-underline hover:underline"
+          external
+          size="sm"
+          className="mt-auto self-start"
         >
           Регистрация
-          <span aria-hidden="true">↗</span>
-        </a>
+        </ButtonLink>
       </div>
     </article>
   );

@@ -105,11 +105,6 @@ export async function SiteHeader() {
               Войти через LMS
             </a>
           ) : null}
-          {!user ? (
-            <ButtonLink href="/join" size="sm">
-              Регистрация
-            </ButtonLink>
-          ) : null}
           {SHOW_CABINET && user ? (
             <ButtonLink href={cabinetHref} size="sm">
               Кабинет

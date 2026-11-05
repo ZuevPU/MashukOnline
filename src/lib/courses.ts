@@ -51,7 +51,7 @@ export const COURSES: Course[] = [
     title: "Молодёжные образовательные программы: от проектирования результата к системной реализации",
     description:
       "Курс по системному проектированию образовательных программ: от целей до измеримых результатов. Освойте полный цикл создания мероприятий с практическими инструментами для командной и индивидуальной работы.",
-    url: "https://lms.mashuk.online/education/listener/course_sessions/molodyozhnye-obrazovatelnye-programmy-ot-proektirovaniya-rezultata-k-sistemnoi-realizatsii-09-01/register",
+    url: "https://lms.mashuk.online/education/listener/course_sessions/molodyozhnye-obrazovatelnye-programmy-ot-proektirovaniya-rezultata-k-sistemnoi-realizatsii-11-01/register",
     tag: "Управление в образовании",
     image: "/courses/molodezhnye-programmy.jpg",
     icon: "route",

@@ -58,8 +58,7 @@ function Social() {
 export async function SiteHeader() {
   // Кнопка «Кабинет» в шапке временно скрыта: вернуть — поставить true.
   const SHOW_CABINET = false;
-  // «Кабинет» ведёт администратора в админку, участника — в его программу
-  // (без программ — в настройки профиля), гостя — на вход
+  // Гостю вместо кабинета показываем «Регистрацию» — вход на портал.
   const user = await getSessionUser();
   let cabinetHref = "/join";
   if (SHOW_CABINET && user) {
@@ -106,7 +105,12 @@ export async function SiteHeader() {
               Войти через LMS
             </a>
           ) : null}
-          {SHOW_CABINET ? (
+          {!user ? (
+            <ButtonLink href="/join" size="sm">
+              Регистрация
+            </ButtonLink>
+          ) : null}
+          {SHOW_CABINET && user ? (
             <ButtonLink href={cabinetHref} size="sm">
               Кабинет
             </ButtonLink>

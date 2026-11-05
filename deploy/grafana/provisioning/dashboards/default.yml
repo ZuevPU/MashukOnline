@@ -1,0 +1,15 @@
+apiVersion: 1
+
+# Дашборды читаются с диска: правки в репозитории подхватываются после
+# перезапуска Grafana, вручную сохранять их в интерфейсе не нужно.
+providers:
+  - name: mashuk
+    orgId: 1
+    folder: Машук
+    type: file
+    disableDeletion: true
+    allowUiUpdates: false
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/dashboards
+      foldersFromFilesStructure: false

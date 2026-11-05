@@ -136,12 +136,55 @@ services:
     mem_limit: 64m
     logging: *logging
 
+  # Проверка доступности портала снаружи: /api/health по HTTPS
+  blackbox-exporter:
+    image: prom/blackbox-exporter:latest
+    profiles: ["metrics"]
+    restart: unless-stopped
+    command:
+      - "--config.file=/etc/blackbox/blackbox.yml"
+    volumes:
+      - ./deploy/metrics/blackbox.yml:/etc/blackbox/blackbox.yml:ro
+    mem_limit: 64m
+    logging: *logging
+
+  # Метрики PostgreSQL: соединения, размер базы, транзакции
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    profiles: ["metrics"]
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATA_SOURCE_NAME: postgresql://${POSTGRES_USER:-mashuk}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-mashuk_platform}?sslmode=disable
+    mem_limit: 64m
+    logging: *logging
+
+  # Ответы Caddy по классам из access-лога: 2xx/3xx/4xx/5xx
+  caddy-exporter:
+    image: python:3.12-alpine
+    profiles: ["metrics"]
+    restart: unless-stopped
+    command: ["python", "-u", "/app/caddy_exporter.py"]
+    volumes:
+      - ./deploy/metrics/caddy_exporter.py:/app/caddy_exporter.py:ro
+      - caddy_data:/caddy:ro
+    environment:
+      CADDY_LOG: /caddy/access.log
+      PORT: "9180"
+    mem_limit: 64m
+    logging: *logging
+
   prometheus:
     image: prom/prometheus:latest
     profiles: ["metrics"]
     restart: unless-stopped
     depends_on:
       - node-exporter
+      - blackbox-exporter
+      - postgres-exporter
+      - caddy-exporter
     volumes:
       - ./deploy/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prom_data:/prometheus
@@ -165,6 +208,9 @@ services:
       GF_ANALYTICS_REPORTING_ENABLED: "false"
     volumes:
       - grafana_data:/var/lib/grafana
+      # Источник данных и дашборды — из репозитория, а не из UI
+      - ./deploy/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./deploy/grafana/dashboards:/etc/grafana/dashboards:ro
     mem_limit: 384m
     logging: *logging
 

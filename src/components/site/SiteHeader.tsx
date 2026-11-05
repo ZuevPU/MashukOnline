@@ -56,15 +56,16 @@ function Social() {
 }
 
 export async function SiteHeader() {
+  // Кнопка «Кабинет» в шапке временно скрыта: вернуть — поставить true.
+  const SHOW_CABINET = false;
   // «Кабинет» ведёт администратора в админку, участника — в его программу
   // (без программ — в настройки профиля), гостя — на вход
   const user = await getSessionUser();
-  let href = "/join";
-  if (user) {
+  let cabinetHref = "/join";
+  if (SHOW_CABINET && user) {
     const home = await homeFor(user.member.id, user.isCenterAdmin);
-    href = home === "/" ? "/cabinet" : home;
+    cabinetHref = home === "/" ? "/cabinet" : home;
   }
-  const action = { href };
 
   return (
     <header className="sticky top-0 z-20 border-b border-[var(--line)] bg-paper-warm/90 backdrop-blur-glass">
@@ -105,9 +106,11 @@ export async function SiteHeader() {
               Войти через LMS
             </a>
           ) : null}
-          <ButtonLink href={action.href} size="sm">
-            Кабинет
-          </ButtonLink>
+          {SHOW_CABINET ? (
+            <ButtonLink href={cabinetHref} size="sm">
+              Кабинет
+            </ButtonLink>
+          ) : null}
         </div>
       </div>
     </header>

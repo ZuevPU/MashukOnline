@@ -5,7 +5,7 @@ import { validEmail, validInn, validRegion, validSnils, normalizeDistrict } from
 import { applyConfig } from "./apply-config";
 import { infoConfig } from "./info-config";
 import { muniConfig } from "./muni-config";
-import { mediaConfig } from "./media-config";
+import { MEDIA_STREAM, mediaConfig } from "./media-config";
 import { CULTISTUD_STREAM, cultistudConfig } from "./cultistud-config";
 import type { FormConfig } from "./types";
 
@@ -242,19 +242,26 @@ export async function submitForm(
         programId,
         fio: str(data, "fio", 200),
         birthDate: str(data, "birth_date", 20) || null,
-        country: str(data, "country", 120) || null,
         city: str(data, "city", 120) || null,
         email: str(data, "email", 254) || null,
         phone: str(data, "phone", 40) || null,
-        messenger: list(data, "messenger"),
-        messengerLink: str(data, "messenger_link", 300) || null,
-        orgName: str(data, "org_name", 300) || null,
+        federalDistrict: normalizeDistrict(str(data, "federal_district", 120)) || null,
+        region: str(data, "region", 120) || null,
+        workplace: str(data, "workplace", 300) || null,
+        snils: str(data, "snils", 20) || null,
+        inn: str(data, "inn", 20) || null,
+        maxAccount: str(data, "max_account", 300) || null,
+        experience: str(data, "experience") || null,
+        category: str(data, "category", 300) || null,
+        // Письмо-вызов — по желанию
+        orgLegalName: str(data, "org_legal_name", 300) || null,
+        headPosition: str(data, "head_position", 200) || null,
+        headFio: str(data, "head_fio", 200) || null,
+        orgEmail: str(data, "org_email", 254) || null,
         position: str(data, "position", 200) || null,
-        mediaType: list(data, "media_type"),
-        mediaTypeOther: str(data, "media_type_other", 200) || null,
-        stream: str(data, "stream", 120) || null,
-        links: str(data, "links", 2000) || null,
-        why: str(data, "why") || null,
+        stream: MEDIA_STREAM,
+        links: str(data, "portfolio", 2000) || null,
+        why: str(data, "motivation") || null,
         agreeTruth: yesNo(list(data, "agree_truth")[0]),
         agreeConsent: yesNo(list(data, "agree_consent")[0]),
         payloadRaw: data,

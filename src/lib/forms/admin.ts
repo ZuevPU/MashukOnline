@@ -27,7 +27,7 @@ const SORTABLE: Record<FormId, Record<string, string>> = {
   apply: { created_at: "createdAt", fio: "fioLatin", email: "email", stream: "stream", country: "country" },
   info: { created_at: "createdAt", fio: "fioLatin", stream: "stream", country: "departCountry" },
   muni: { created_at: "createdAt", fio: "fio", email: "email", stream: "stream", region: "region" },
-  media: { created_at: "createdAt", fio: "fio", email: "email", stream: "stream", country: "country" },
+  media: { created_at: "createdAt", fio: "fio", email: "email", stream: "stream", region: "region" },
   cultistud: { created_at: "createdAt", fio: "fio", email: "email", region: "region" },
 };
 
@@ -145,18 +145,26 @@ export const FORM_META: Record<
       { key: "id", title: "ID" },
       { key: "created_at", title: "Дата подачи" },
       { key: "fio", title: "ФИО" },
-      { key: "birth_date", title: "Дата рождения" },
-      { key: "country", title: "Страна" },
+      { key: "federal_district", title: "Федеральный округ" },
+      { key: "region", title: "Регион" },
       { key: "city", title: "Город" },
-      { key: "email", title: "E-mail" },
+      { key: "birth_date", title: "Дата рождения" },
+      { key: "snils", title: "СНИЛС" },
+      { key: "inn", title: "ИНН" },
+      { key: "workplace", title: "Место работы / учёбы" },
+      { key: "position", title: "Должность / курс" },
       { key: "phone", title: "Телефон" },
-      { key: "messenger", title: "Мессенджер" },
-      { key: "org_name", title: "Издание / организация" },
-      { key: "position", title: "Должность" },
-      { key: "media_type", title: "Сфера деятельности" },
-      { key: "stream", title: "Даты участия" },
-      { key: "links", title: "Материалы и портфолио" },
+      { key: "email", title: "E-mail" },
+      { key: "max_account", title: "Аккаунт в MAX" },
+      { key: "category", title: "Категория участника" },
       { key: "why", title: "Мотивация" },
+      { key: "experience", title: "Профессиональный опыт" },
+      { key: "links", title: "Портфолио (ссылка)" },
+      { key: "org_legal_name", title: "Письмо-вызов: организация" },
+      { key: "head_position", title: "Письмо-вызов: должность руководителя" },
+      { key: "head_fio", title: "Письмо-вызов: ФИО руководителя" },
+      { key: "org_email", title: "Письмо-вызов: e-mail организации" },
+      { key: "stream", title: "Даты участия" },
     ],
   },
   cultistud: {
@@ -271,8 +279,8 @@ const SUMMARY: Record<FormId, { key: string; column: string }[]> = {
   media: [
     { key: "fio", column: "fio" },
     { key: "email", column: "email" },
-    { key: "org", column: "orgName" },
-    { key: "stream", column: "stream" },
+    { key: "org", column: "workplace" },
+    { key: "region", column: "region" },
   ],
   cultistud: [
     { key: "fio", column: "fio" },
@@ -315,7 +323,8 @@ function searchColumns(form: FormId): string[] {
   if (form === "muni" || form === "cultistud") {
     return ["fio", "email", "phone", "region", "city", "workplace", "federal_district", "position"];
   }
-  return ["fio", "email", "phone", "org_name", "city", "country", "position"];
+  // media: org_name и country больше не заполняются — ищем по новым полям
+  return ["fio", "email", "phone", "workplace", "city", "region", "position"];
 }
 
 export async function listApplications(form: FormId, f: AppFilters): Promise<ListResult> {

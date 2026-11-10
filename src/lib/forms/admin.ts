@@ -29,7 +29,7 @@ const SORTABLE: Record<FormId, Record<string, string>> = {
   muni: { created_at: "createdAt", fio: "fio", email: "email", stream: "stream", region: "region" },
   media: { created_at: "createdAt", fio: "fio", email: "email", stream: "stream", region: "region" },
   cultistud: { created_at: "createdAt", fio: "fio", email: "email", region: "region" },
-  competence: { created_at: "createdAt", fio: "fio", email: "email", region: "region" },
+  competence: { created_at: "createdAt", fio: "fio", email: "email", region: "region", workplace: "workplace" },
 };
 
 export const FORM_META: Record<
@@ -272,6 +272,7 @@ export const SORT_LABELS: Record<string, string> = {
   stream: "Поток",
   country: "Страна",
   region: "Регион",
+  workplace: "Место работы",
 };
 
 /** Список сортировок, доступных конкретной форме. */
@@ -465,6 +466,8 @@ export const restoreApplication = (form: FormId, id: number) => setDeleted(form,
 export async function listStreams(form: FormId): Promise<string[]> {
   const db = getDb();
   if (!db) return [];
+  // У формы «Competence» нет потоков: колонки stream в таблице нет
+  if (form === "competence") return [];
   const t = table(form);
   const rows = await db
     .selectDistinct({ value: t.stream })

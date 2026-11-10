@@ -49,6 +49,7 @@ const FORMS: { id: FormId; href: string }[] = [
   { id: "muni", href: "/municipalharmony" },
   { id: "media", href: "/mediacompetencies" },
   { id: "cultistud", href: "/cultistudform" },
+  { id: "competence", href: "/competence" },
 ];
 
 const EXTERNAL: { href: string; title: string; note: string }[] = [

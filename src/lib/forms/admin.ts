@@ -233,7 +233,8 @@ export const ALL_LIMIT = 10_000;
 export const PAGE_SIZES = [10, 50, 100] as const;
 
 export function isFormId(value: string): value is FormId {
-  return value === "apply" || value === "info" || value === "muni" || value === "media" || value === "cultistud";
+  // Список форм берём из описаний — новая форма не требует правки этой проверки
+  return Object.prototype.hasOwnProperty.call(FORM_META, value);
 }
 
 function intParam(raw: unknown, fallback: number, lo: number, hi: number): number {

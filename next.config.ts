@@ -35,6 +35,8 @@ const nextConfig: NextConfig = {
         { source: "/educationatitsbest", destination: "/info" },
         { source: "/educationatpeak", destination: "/events/seminar" },
         { source: "/mediacompetencies", destination: "/events/media" },
+        // Форма заявки — по короткому адресу от лендинга программы
+        { source: "/mediacompetencies/apply", destination: "/events/media/apply" },
         { source: "/municipalharmony", destination: "/muni" },
         { source: "/cultistudform", destination: "/cultistud" },
         { source: "/edu", destination: "/" },

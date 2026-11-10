@@ -61,8 +61,8 @@ export default function MediaLanding() {
               </div>
             ))}
           </div>
-          <ButtonLink href="/events/media/apply" variant="light">
-            Регистрация
+          <ButtonLink href="/mediacompetencies/apply" variant="light">
+            Заполнить заявку
           </ButtonLink>
         </div>
         <MountainLine className="text-white" />
@@ -178,7 +178,7 @@ export default function MediaLanding() {
           <p className="eyebrow">Регистрация</p>
           <h2 className="section-title">Медиакомпетенции</h2>
           <div className="flex flex-wrap items-center gap-3.5">
-            <ButtonLink href="/events/media/apply">Регистрация</ButtonLink>
+            <ButtonLink href="/mediacompetencies/apply">Заполнить заявку</ButtonLink>
           </div>
 
           <h3 className="mt-9 mb-3 font-display text-[22px] font-semibold text-navy">Контакты для связи</h3>

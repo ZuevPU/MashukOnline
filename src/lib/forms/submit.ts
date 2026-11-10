@@ -6,6 +6,7 @@ import { applyConfig } from "./apply-config";
 import { infoConfig } from "./info-config";
 import { muniConfig } from "./muni-config";
 import { MEDIA_STREAM, mediaConfig } from "./media-config";
+import { competenceConfig } from "./competence-config";
 import { CULTISTUD_STREAM, cultistudConfig } from "./cultistud-config";
 import type { FormConfig } from "./types";
 
@@ -22,6 +23,7 @@ export const FORM_CONFIGS: Record<FormConfig["id"], FormConfig> = {
   info: infoConfig,
   muni: muniConfig,
   media: mediaConfig,
+  competence: competenceConfig,
   cultistud: cultistudConfig,
 };
 
@@ -267,6 +269,38 @@ export async function submitForm(
         payloadRaw: data,
       })
       .returning({ id: schema.mediaApplications.id });
+    return { id: rows[0].id };
+  }
+
+  if (id === "competence") {
+    if (!validEmail(str(data, "email"))) throw new SubmitError("Укажите корректный e-mail");
+    if (!list(data, "agree_consent").length) throw new SubmitError("Проставьте согласие на обработку данных");
+    const rows = await db
+      .insert(schema.competenceApplications)
+      .values({
+        programId,
+        fio: str(data, "fio", 200),
+        federalDistrict: normalizeDistrict(str(data, "federal_district", 120)) || null,
+        region: str(data, "region", 120) || null,
+        city: str(data, "city", 120) || null,
+        birthDate: str(data, "birth_date", 20) || null,
+        workplace: str(data, "workplace", 300) || null,
+        position: str(data, "position", 200) || null,
+        phone: str(data, "phone", 40) || null,
+        email: str(data, "email", 254) || null,
+        colleagues: str(data, "colleagues", 1000) || null,
+        arrivalDate: str(data, "arrival_date", 20) || null,
+        arrivalTime: str(data, "arrival_time", 20) || null,
+        arrivalPlace: str(data, "arrival_place", 200) || null,
+        arrivalFlight: str(data, "arrival_flight", 60) || null,
+        departureFrom: str(data, "departure_from", 200) || null,
+        departureFlight: str(data, "departure_flight", 60) || null,
+        departureDate: str(data, "departure_date", 20) || null,
+        departureTime: str(data, "departure_time", 20) || null,
+        agreeConsent: yesNo(list(data, "agree_consent")[0]),
+        payloadRaw: data,
+      })
+      .returning({ id: schema.competenceApplications.id });
     return { id: rows[0].id };
   }
 

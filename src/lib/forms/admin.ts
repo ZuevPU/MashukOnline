@@ -6,7 +6,7 @@ import { getDb, schema } from "../db/client";
  * Три формы — семинар (apply), данные участников (info), муниципалитеты (muni).
  */
 
-export type FormId = "apply" | "info" | "muni" | "media" | "cultistud";
+export type FormId = "apply" | "info" | "muni" | "media" | "cultistud" | "competence";
 
 export interface AppFilters {
   q: string;
@@ -29,6 +29,7 @@ const SORTABLE: Record<FormId, Record<string, string>> = {
   muni: { created_at: "createdAt", fio: "fio", email: "email", stream: "stream", region: "region" },
   media: { created_at: "createdAt", fio: "fio", email: "email", stream: "stream", region: "region" },
   cultistud: { created_at: "createdAt", fio: "fio", email: "email", region: "region" },
+  competence: { created_at: "createdAt", fio: "fio", email: "email", region: "region" },
 };
 
 export const FORM_META: Record<
@@ -173,6 +174,34 @@ export const FORM_META: Record<
       { key: "stream", title: "Даты участия" },
     ],
   },
+  competence: {
+    label: "Competence — госслужащие",
+    short: "Competence",
+    fileColumns: [],
+    period: { from: "2026-11-28", to: "2026-12-01", label: "28 ноября — 1 декабря 2026" },
+    excel: [
+      { key: "id", title: "ID" },
+      { key: "created_at", title: "Дата подачи" },
+      { key: "fio", title: "ФИО" },
+      { key: "federal_district", title: "Федеральный округ" },
+      { key: "region", title: "Регион" },
+      { key: "city", title: "Город" },
+      { key: "birth_date", title: "Дата рождения" },
+      { key: "workplace", title: "Место работы" },
+      { key: "position", title: "Должность" },
+      { key: "phone", title: "Телефон" },
+      { key: "email", title: "E-mail" },
+      { key: "colleagues", title: "Коллеги" },
+      { key: "arrival_date", title: "Дата прибытия" },
+      { key: "arrival_time", title: "Время прибытия" },
+      { key: "arrival_place", title: "Место прибытия" },
+      { key: "arrival_flight", title: "Рейс прибытия" },
+      { key: "departure_from", title: "Отбытие (откуда)" },
+      { key: "departure_flight", title: "Рейс отбытия" },
+      { key: "departure_date", title: "Дата отбытия" },
+      { key: "departure_time", title: "Время отправления" },
+    ],
+  },
   cultistud: {
     label: "Семинар «Студенческие сообщества»",
     short: "Студенческие сообщества",
@@ -289,6 +318,12 @@ const SUMMARY: Record<FormId, { key: string; column: string }[]> = {
     { key: "org", column: "workplace" },
     { key: "region", column: "region" },
   ],
+  competence: [
+    { key: "fio", column: "fio" },
+    { key: "email", column: "email" },
+    { key: "org", column: "workplace" },
+    { key: "region", column: "region" },
+  ],
   cultistud: [
     { key: "fio", column: "fio" },
     { key: "email", column: "email" },
@@ -305,6 +340,7 @@ function table(form: FormId): AnyTable {
   if (form === "info") return schema.participantDetails;
   if (form === "muni") return schema.municipalApplications;
   if (form === "cultistud") return schema.cultistudApplications;
+  if (form === "competence") return schema.competenceApplications;
   return schema.mediaApplications;
 }
 
@@ -327,7 +363,7 @@ function snakeRow(row: Record<string, unknown>): Record<string, unknown> {
 function searchColumns(form: FormId): string[] {
   if (form === "apply") return ["fio_latin", "fio_ru", "email", "phone", "country", "city", "org_name", "citizenship"];
   if (form === "info") return ["fio_latin", "citizenship", "depart_country", "depart_city", "stream"];
-  if (form === "muni" || form === "cultistud") {
+  if (form === "muni" || form === "cultistud" || form === "competence") {
     return ["fio", "email", "phone", "region", "city", "workplace", "federal_district", "position"];
   }
   // media: org_name и country больше не заполняются — ищем по новым полям

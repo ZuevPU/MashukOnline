@@ -631,6 +631,39 @@ export const mediaApplications = pgTable(
 );
 
 
+/** Всероссийский семинар «Профессиональное развитие государственных служащих». */
+export const competenceApplications = pgTable(
+  "competence_applications",
+  {
+    ...applicationBase(),
+    fio: text("fio").notNull(),
+    federalDistrict: text("federal_district"),
+    region: text("region"),
+    city: text("city"),
+    birthDate: text("birth_date"),
+    workplace: text("workplace"),
+    position: text("position"),
+    phone: text("phone"),
+    email: text("email"),
+    colleagues: text("colleagues"),
+    arrivalDate: text("arrival_date"),
+    arrivalTime: text("arrival_time"),
+    arrivalPlace: text("arrival_place"),
+    arrivalFlight: text("arrival_flight"),
+    departureFrom: text("departure_from"),
+    departureFlight: text("departure_flight"),
+    departureDate: text("departure_date"),
+    departureTime: text("departure_time"),
+    agreeConsent: text("agree_consent"),
+  },
+  (table) => [
+    index("competence_applications_created_idx").on(table.createdAt),
+    index("competence_applications_email_idx").on(table.email),
+    index("competence_applications_program_idx").on(table.programId),
+    index("competence_applications_deleted_idx").on(table.deletedAt),
+  ],
+);
+
 /** Семинар «Студенческие сообщества как пространство поликультурного взаимодействия». */
 export const cultistudApplications = pgTable(
   "cultistud_applications",

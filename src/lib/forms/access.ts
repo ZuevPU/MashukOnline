@@ -15,7 +15,7 @@ import type { FormId } from "./admin";
 
 export type AccessKey = FormId | "support";
 
-export const ACCESS_KEYS: AccessKey[] = ["apply", "info", "muni", "media", "cultistud", "support"];
+export const ACCESS_KEYS: AccessKey[] = ["apply", "info", "muni", "media", "cultistud", "competence", "support"];
 
 export function accessLabel(key: AccessKey): string {
   return key === "support" ? "Техническая поддержка" : FORM_META[key].label;

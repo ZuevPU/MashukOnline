@@ -8,6 +8,22 @@ import { accessibleForms } from "@/lib/forms/access";
 import type { FormId } from "@/lib/forms/admin";
 import { countOpenSupportRequests } from "@/lib/support";
 
+
+const STATUS_CHIP = {
+  live: "rounded-full bg-[#0b6b3a]/10 px-2.5 py-1 text-[11px] font-semibold text-[#0b6b3a]",
+  soon: "rounded-full bg-navy/10 px-2.5 py-1 text-[11px] font-semibold text-navy",
+  past: "rounded-full bg-[var(--line)] px-2.5 py-1 text-[11px] font-semibold text-ink-faint",
+} as const;
+
+/** Статус мероприятия по датам: идёт, скоро или завершено. */
+function periodStatus(period?: { from: string; to: string }) {
+  if (!period) return null;
+  const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Moscow" });
+  if (today < period.from) return { text: "Скоро", cls: STATUS_CHIP.soon };
+  if (today > period.to) return { text: "Завершено", cls: STATUS_CHIP.past };
+  return { text: "Идёт сейчас", cls: STATUS_CHIP.live };
+}
+
 export const metadata = { title: "Обзор" };
 
 /** Публичные страницы портала. */
@@ -31,7 +47,7 @@ const FORMS: { id: FormId; href: string }[] = [
   { id: "apply", href: "/interethnic" },
   { id: "info", href: "/educationatitsbest" },
   { id: "muni", href: "/municipalharmony" },
-  { id: "media", href: "/events/media/apply" },
+  { id: "media", href: "/mediacompetencies/apply" },
   { id: "cultistud", href: "/cultistudform" },
 ];
 
@@ -74,6 +90,17 @@ export default async function AdminOverview() {
               <span className="font-display text-lead font-semibold tracking-[-0.02em] text-navy">
                 {FORM_META[form.id].label}
               </span>
+              {FORM_META[form.id].period ? (
+                <span className="flex flex-wrap items-center gap-2 text-meta text-ink-soft">
+                  <span>
+                    Даты: <b className="text-ink">{FORM_META[form.id].period!.label}</b>
+                  </span>
+                  {(() => {
+                    const status = periodStatus(FORM_META[form.id].period);
+                    return status ? <span className={status.cls}>{status.text}</span> : null;
+                  })()}
+                </span>
+              ) : null}
               <span className="text-meta text-ink-soft">
                 Всего: <b className="text-ink">{counts[index].total}</b> · за неделю:{" "}
                 <b className="text-ink">{counts[index].week}</b> · {formatDate(counts[index].last)}

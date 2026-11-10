@@ -38,11 +38,14 @@ export const FORM_META: Record<
     short: string;
     fileColumns: { kind: string; column: string; label: string; accept: string }[];
     excel: { key: string; title: string }[];
+    /** Даты мероприятия: по ним в обзоре видно, что актуально, а что уже прошло */
+    period?: { from: string; to: string; label: string };
   }
 > = {
   apply: {
     label: "Семинар «Образование на высоте»",
     short: "Семинар",
+    period: { from: "2026-09-29", to: "2026-11-02", label: "29 сентября — 2 ноября 2026" },
     fileColumns: [
       { kind: "portfolio", column: "portfolio_path", label: "Портфолио", accept: ".pdf" },
       {
@@ -81,6 +84,7 @@ export const FORM_META: Record<
   info: {
     label: "Данные участников",
     short: "Данные участников",
+    period: { from: "2026-09-29", to: "2026-11-02", label: "29 сентября — 2 ноября 2026" },
     fileColumns: [
       { kind: "passport", column: "passport_scan_path", label: "Скан паспорта", accept: ".pdf,.jpg,.jpeg,.png" },
     ],
@@ -110,6 +114,7 @@ export const FORM_META: Record<
   muni: {
     label: "Муниципалитеты",
     short: "Муниципалитеты",
+    period: { from: "2026-11-13", to: "2026-11-16", label: "13–16 ноября 2026" },
     fileColumns: [
       {
         kind: "consent",
@@ -140,6 +145,7 @@ export const FORM_META: Record<
   media: {
     label: "Медиакомпетенции",
     short: "Медиа",
+    period: { from: "2026-11-25", to: "2026-11-28", label: "25–28 ноября 2026" },
     fileColumns: [],
     excel: [
       { key: "id", title: "ID" },
@@ -170,6 +176,7 @@ export const FORM_META: Record<
   cultistud: {
     label: "Семинар «Студенческие сообщества»",
     short: "Студенческие сообщества",
+    period: { from: "2026-11-05", to: "2026-11-08", label: "5–8 ноября 2026" },
     fileColumns: [],
     excel: [
       { key: "id", title: "ID" },

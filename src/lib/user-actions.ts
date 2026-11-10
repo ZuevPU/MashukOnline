@@ -66,6 +66,53 @@ export async function createUserAction(_prev: AdminState, form: FormData): Promi
   };
 }
 
+
+/** Изменение данных пользователя: имя, логин, должность, организация. */
+export async function updateUserAction(_prev: AdminState, form: FormData): Promise<AdminState> {
+  const db = getDb();
+  if (!db || !(await centerAdmin())) return { error: "Изменять пользователей может администратор Центра" };
+
+  const id = text(form, "id", 80);
+  const name = text(form, "name", 120);
+  const rawContact = text(form, "contact", 200);
+  const contact = normalizeContact(rawContact);
+  const values = { id, name, contact: rawContact, position: text(form, "position", 160), org: text(form, "org", 200) };
+
+  if (!id) return { error: "Пользователь не найден", values };
+  if (name.length < 2) return { error: "Укажите имя и фамилию", values };
+  if (!contact) return { error: "Укажите почту или телефон — это логин", values };
+
+  const [clash] = await db
+    .select({ id: schema.members.id })
+    .from(schema.members)
+    .where(eq(schema.members.contact, contact));
+  if (clash && clash.id !== id) return { error: "Такой логин уже занят другим пользователем", values };
+
+  const [before] = await db
+    .select({ contact: schema.members.contact })
+    .from(schema.members)
+    .where(eq(schema.members.id, id));
+  if (!before) return { error: "Пользователь не найден", values };
+
+  await db
+    .update(schema.members)
+    .set({
+      name,
+      contact,
+      position: values.position || null,
+      org: values.org || null,
+    })
+    .where(eq(schema.members.id, id));
+
+  // Логин сменился — старые входы закрываем, человек войдёт заново
+  if (before.contact !== contact) {
+    await db.delete(schema.authSessions).where(eq(schema.authSessions.memberId, id));
+  }
+
+  changed();
+  return { ok: "Данные сохранены" };
+}
+
 export async function changeUserRoleAction(form: FormData): Promise<void> {
   const db = getDb();
   const admin = await centerAdmin();

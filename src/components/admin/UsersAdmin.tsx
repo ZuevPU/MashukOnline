@@ -1,8 +1,8 @@
 "use client";
 
-import { useActionState, useMemo, useState } from "react";
+import { Fragment, useActionState, useEffect, useMemo, useState } from "react";
 import { KeyRound, Search, UserPlus } from "lucide-react";
-import { changeUserRoleAction, createUserAction, resetUserPasswordAction } from "@/lib/user-actions";
+import { changeUserRoleAction, createUserAction, resetUserPasswordAction, updateUserAction } from "@/lib/user-actions";
 import { MEMBER_ROLE_LABELS } from "@/lib/types";
 import type { MemberRole } from "@/lib/types";
 import type { UserRow } from "@/lib/users";
@@ -49,9 +49,41 @@ export function CreateUserPanel() {
   );
 }
 
+
+function EditUserRow({ user, onClose }: { user: UserRow; onClose: () => void }) {
+  const [state, action, pending] = useActionState(updateUserAction, {});
+  const v = state.values ?? {};
+
+  useEffect(() => {
+    if (state.ok) onClose();
+  }, [state.ok, onClose]);
+
+  return (
+    <td colSpan={6} className="bg-[var(--paper-warm,#f7f5ef)] px-3 py-4">
+      <form action={action} className="grid gap-3 md:grid-cols-4">
+        <input type="hidden" name="id" value={user.id} />
+        <TextField label="Имя и фамилия" name="name" required defaultValue={v.name ?? user.name} />
+        <TextField label="Почта или телефон" name="contact" required defaultValue={v.contact ?? user.contact ?? ""} />
+        <TextField label="Должность" name="position" defaultValue={v.position ?? user.position ?? ""} />
+        <TextField label="Организация" name="org" defaultValue={v.org ?? user.org ?? ""} />
+        <div className="flex flex-wrap items-center gap-3 md:col-span-4">
+          <Button type="submit" size="sm" disabled={pending}>
+            Сохранить
+          </Button>
+          <Button type="button" size="sm" tone="quiet" onClick={onClose}>
+            Отмена
+          </Button>
+          <Result state={state} />
+        </div>
+      </form>
+    </td>
+  );
+}
+
 export function UsersTable({ users, selfId, formLabels }: { users: UserRow[]; selfId: string; formLabels: Record<string, string> }) {
   const [query, setQuery] = useState("");
   const [reset, resetAction, resetting] = useActionState(resetUserPasswordAction, {});
+  const [editing, setEditing] = useState<string | null>(null);
 
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -94,7 +126,8 @@ export function UsersTable({ users, selfId, formLabels }: { users: UserRow[]; se
           </thead>
           <tbody>
             {shown.map((user, index) => (
-              <tr key={user.id} className="border-b border-[var(--line-soft)] align-top last:border-0">
+              <Fragment key={user.id}>
+              <tr className="border-b border-[var(--line-soft)] align-top last:border-0">
                 <td className="px-3 py-3 text-right text-ink-soft tabular-nums">{index + 1}</td>
                 <td className="px-3 py-3">
                   <span className="block font-semibold text-ink">{user.name}</span>
@@ -130,17 +163,33 @@ export function UsersTable({ users, selfId, formLabels }: { users: UserRow[]; se
                 </td>
                 <td className="px-3 py-3 text-meta text-ink-soft tabular-nums">{user.programs || "—"}</td>
                 <td className="px-3 py-3 text-right">
-                  {user.contact && (
-                    <form action={resetAction}>
-                      <input type="hidden" name="id" value={user.id} />
-                      <Button type="submit" tone="quiet" size="sm" disabled={resetting}>
-                        <KeyRound size={13} />
-                        Новый пароль
-                      </Button>
-                    </form>
-                  )}
+                  <div className="flex flex-wrap items-center justify-end gap-2">
+                    <Button
+                      type="button"
+                      tone="quiet"
+                      size="sm"
+                      onClick={() => setEditing(editing === user.id ? null : user.id)}
+                    >
+                      Изменить
+                    </Button>
+                    {user.contact && (
+                      <form action={resetAction}>
+                        <input type="hidden" name="id" value={user.id} />
+                        <Button type="submit" tone="quiet" size="sm" disabled={resetting}>
+                          <KeyRound size={13} />
+                          Новый пароль
+                        </Button>
+                      </form>
+                    )}
+                  </div>
                 </td>
               </tr>
+              {editing === user.id ? (
+                <tr className="border-b border-[var(--line-soft)] last:border-0">
+                  <EditUserRow user={user} onClose={() => setEditing(null)} />
+                </tr>
+              ) : null}
+              </Fragment>
             ))}
           </tbody>
         </table>

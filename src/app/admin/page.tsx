@@ -47,7 +47,7 @@ const FORMS: { id: FormId; href: string }[] = [
   { id: "apply", href: "/interethnic" },
   { id: "info", href: "/educationatitsbest" },
   { id: "muni", href: "/municipalharmony" },
-  { id: "media", href: "/mediacompetencies/apply" },
+  { id: "media", href: "/mediacompetencies" },
   { id: "cultistud", href: "/cultistudform" },
 ];
 

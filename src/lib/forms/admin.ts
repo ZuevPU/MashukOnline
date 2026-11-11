@@ -200,6 +200,7 @@ export const FORM_META: Record<
       { key: "departure_flight", title: "Рейс отбытия" },
       { key: "departure_date", title: "Дата отбытия" },
       { key: "departure_time", title: "Время отправления" },
+      { key: "accommodation", title: "Проживание" },
     ],
   },
   cultistud: {

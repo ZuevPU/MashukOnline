@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import { cookies } from "next/headers";
 import { geologica, notoSerif } from "@/lib/fonts";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
@@ -33,7 +34,12 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  // Выбор по cookie известен на сервере: полоса согласия не появляется
+  // и не исчезает после гидратации, вёрстка не прыгает.
+  const stored = (await cookies()).get("mashuk-cookie-consent")?.value;
+  const consent = stored === "accepted" || stored === "declined" ? stored : null;
+
   return (
     <html
       lang="ru"
@@ -45,11 +51,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     >
       <body className="flex min-h-dvh flex-col">
         <SiteHeader />
+        <CookieConsent initial={consent} />
         <main id="top" className="flex-1">
           {children}
         </main>
         <SiteFooter />
-        <CookieConsent />
       </body>
     </html>
   );

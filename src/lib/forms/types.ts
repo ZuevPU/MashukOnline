@@ -44,6 +44,11 @@ export interface FieldDef {
 
 export interface SectionDef {
   title?: string;
+  /**
+   * В встроенной форме блок свёрнут в раскрывающуюся строку.
+   * Для необязательных данных: «Письмо-вызов (если нужно)».
+   */
+  collapsible?: boolean;
   fields: FieldDef[];
 }
 

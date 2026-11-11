@@ -10,10 +10,10 @@ export const MEDIA_STREAM = "25 — 28 ноября 2026";
  * Заявка участника образовательного семинара «Медиакомпетенции в сфере
  * межнациональных отношений: этика, инструменты, практики».
  *
- * Анкета по редакции от 10.11.2026: расширенная общая информация (округ,
- * регион, СНИЛС, ИНН, место работы, аккаунт MAX), блок об опыте с мотивацией
- * до 500 символов и ссылкой на портфолио, категория участника и необязательный
- * блок «Письмо-вызов».
+ * Анкета по редакции от 10.11.2026. Форма живёт прямо на лендинге
+ * /mediacompetencies, поэтому блоки идут в порядке заполнения: общие данные,
+ * контакты, опыт, необязательное письмо-вызов и согласия. Подсказки короткие:
+ * длинные пояснения отнимают у полей внимание.
  */
 export const mediaConfig: FormConfig = {
   id: "media",
@@ -54,6 +54,28 @@ export const mediaConfig: FormConfig = {
           wide: true,
         },
         {
+          name: "birth_date",
+          label: "Дата рождения",
+          type: "date",
+          required: true,
+        },
+        {
+          name: "snils",
+          label: "СНИЛС",
+          hint: "XXX-XXX-XXX XX",
+          type: "text",
+          required: true,
+          maxLength: 20,
+        },
+        {
+          name: "inn",
+          label: "ИНН",
+          hint: "12 цифр",
+          type: "text",
+          required: true,
+          maxLength: 20,
+        },
+        {
           name: "federal_district",
           label: "Федеральный округ",
           type: "select",
@@ -77,28 +99,6 @@ export const mediaConfig: FormConfig = {
           maxLength: 120,
         },
         {
-          name: "birth_date",
-          label: "Дата рождения",
-          type: "date",
-          required: true,
-        },
-        {
-          name: "snils",
-          label: "СНИЛС",
-          hint: "XXX-XXX-XXX XX",
-          type: "text",
-          required: true,
-          maxLength: 20,
-        },
-        {
-          name: "inn",
-          label: "ИНН",
-          hint: "XXXXXXXXXXXX",
-          type: "text",
-          required: true,
-          maxLength: 20,
-        },
-        {
           name: "workplace",
           label: "Место работы / учёбы",
           type: "text",
@@ -114,74 +114,9 @@ export const mediaConfig: FormConfig = {
           maxLength: 200,
         },
         {
-          name: "phone",
-          label: "Контактный телефон",
-          type: "tel",
-          required: true,
-          maxLength: 40,
-        },
-        {
-          name: "max_account",
-          label: "Аккаунт в MAX",
-          hint:
-            "Коммуникация с участниками будет в этом мессенджере. В настройках профиля разрешите " +
-            "добавление вас в чат программы на случай успешного прохождения отбора.",
-          type: "text",
-          required: true,
-          maxLength: 300,
-          wide: true,
-        },
-        {
-          name: "email",
-          label: "Электронная почта",
-          hint: "Обязательно проверьте корректность: на этот адрес придёт статус заявки",
-          type: "email",
-          required: true,
-          maxLength: 254,
-          wide: true,
-        },
-      ],
-    },
-    {
-      title: "Информация об опыте",
-      fields: [
-        {
-          name: "motivation",
-          label: "Опишите кратко свою мотивацию принять участие именно в этом мероприятии",
-          hint: "почему для вас это важно — до 500 символов",
-          type: "textarea",
-          required: true,
-          maxLength: 500,
-          wide: true,
-        },
-        {
-          name: "experience",
-          label: "Расскажите о своём профессиональном опыте",
-          type: "textarea",
-          required: true,
-          maxLength: 3000,
-          wide: true,
-        },
-        {
-          name: "portfolio",
-          label: "Ссылка на портфолио с вашими достижениями",
-          hint:
-            "Портфолио должно содержать примеры по теме межнациональных и межконфессиональных " +
-            "отношений: видео, аудио, публикации, блоги, подкасты, медиапроекты, а также дипломы " +
-            "и сертификаты. Загрузите на облако (Яндекс.Диск, Облако Mail.ru) и прикрепите ссылку",
-          type: "text",
-          required: true,
-          maxLength: 500,
-          wide: true,
-        },
-      ],
-    },
-    {
-      title: "Информация о себе",
-      fields: [
-        {
           name: "category",
-          label: "Выберите категорию, к которой Вы относитесь",
+          label: "Категория участника",
+          hint: "выберите ту, что ближе к вашей работе",
           type: "radio",
           options: opts(
             "Этнические и межэтнические журналисты",
@@ -196,24 +131,90 @@ export const mediaConfig: FormConfig = {
       ],
     },
     {
-      title: "Письмо-вызов (при необходимости)",
+      title: "Контакты",
+      fields: [
+        {
+          name: "phone",
+          label: "Контактный телефон",
+          type: "tel",
+          required: true,
+          maxLength: 40,
+        },
+        {
+          name: "email",
+          label: "Электронная почта",
+          hint: "На этот адрес придёт статус заявки — проверьте написание.",
+          type: "email",
+          required: true,
+          maxLength: 254,
+        },
+        {
+          name: "max_account",
+          label: "Аккаунт в MAX",
+          hint:
+            "Коммуникация с участниками — в мессенджере MAX. В настройках профиля " +
+            "разрешите добавление в чат программы.",
+          type: "text",
+          required: true,
+          maxLength: 300,
+          wide: true,
+        },
+      ],
+    },
+    {
+      title: "Опыт и мотивация",
+      fields: [
+        {
+          name: "motivation",
+          label: "Почему вам важно участвовать в этом семинаре",
+          hint: "коротко, до 500 символов",
+          type: "textarea",
+          required: true,
+          maxLength: 500,
+          wide: true,
+        },
+        {
+          name: "experience",
+          label: "Ваш профессиональный опыт",
+          hint: "Где работаете, какие темы ведёте, что уже сделали в медиа.",
+          type: "textarea",
+          required: true,
+          maxLength: 3000,
+          wide: true,
+        },
+        {
+          name: "portfolio",
+          label: "Ссылка на портфолио",
+          hint:
+            "Облако (Яндекс.Диск, Облако Mail.ru) с примерами работ по теме, " +
+            "публикациями, дипломами и сертификатами.",
+          type: "text",
+          required: true,
+          maxLength: 500,
+          wide: true,
+        },
+      ],
+    },
+    {
+      title: "Письмо-вызов (если нужно)",
+      collapsible: true,
       fields: [
         {
           name: "org_legal_name",
-          label: "Полное наименование Вашей организации",
+          label: "Полное наименование организации",
           type: "text",
           maxLength: 300,
           wide: true,
         },
         {
           name: "head_position",
-          label: "Должность руководителя организации",
+          label: "Должность руководителя",
           type: "text",
           maxLength: 200,
         },
         {
           name: "head_fio",
-          label: "Фамилия, имя и отчество руководителя организации",
+          label: "ФИО руководителя",
           type: "text",
           maxLength: 200,
         },
@@ -240,8 +241,8 @@ export const mediaConfig: FormConfig = {
         {
           name: "agree_consent",
           label:
-            "Регистрируясь, даю согласие на обработку предоставленных мной персональных данных " +
-            "в соответствии с требованиями статьи 9 Федерального закона от 27.07.2006 № 152-ФЗ " +
+            "Даю согласие на обработку предоставленных мной персональных данных " +
+            "в соответствии со статьёй 9 Федерального закона от 27.07.2006 № 152-ФЗ " +
             "«О персональных данных»",
           type: "checkboxes",
           options: opts("Да"),
@@ -254,6 +255,7 @@ export const mediaConfig: FormConfig = {
   files: [],
   submitLabel: "Отправить заявку",
   successTitle: "Заявка отправлена",
-  successText: "Спасибо! Статус заявки придёт на указанную электронную почту.",
+  successText:
+    "Спасибо! Статус заявки придёт на указанную электронную почту. Если письма нет — проверьте папку «Спам».",
   programSlug: "mediakompetencii-2026",
 };

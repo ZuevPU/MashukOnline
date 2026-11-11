@@ -4,7 +4,10 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 const KEY = "mashuk-cookie-consent";
+const YEAR = 60 * 60 * 24 * 365;
 const YM_ID = 104001534;
+
+type Choice = "accepted" | "declined";
 
 /** Загружает Яндекс.Метрику только после согласия пользователя. */
 function loadMetrika(): void {
@@ -18,63 +21,74 @@ function loadMetrika(): void {
   document.head.appendChild(script);
 }
 
+/** Запоминает выбор и в localStorage, и в cookie: cookie читает сервер. */
+function remember(choice: Choice): void {
+  window.localStorage.setItem(KEY, choice);
+  document.cookie = `${KEY}=${choice}; path=/; max-age=${YEAR}; samesite=lax`;
+}
+
 /**
  * Согласие на использование cookie и аналитики (152-ФЗ).
- * Аналитика подключается только при явном согласии; выбор запоминается.
+ * Аналитика подключается только при явном согласии.
+ *
+ * Ответ приходит из layout (cookie), поэтому полоса рендерится сразу и не
+ * сдвигает страницу после гидратации. Это не всплывающее окно: пока решение
+ * не принято, полоса занимает своё место в потоке и не закрывает форму.
  */
-export function CookieConsent() {
-  const [ready, setReady] = useState(false);
-  const [choice, setChoice] = useState<"accepted" | "declined" | null>(null);
+export function CookieConsent({ initial = null }: { initial?: Choice | null }) {
+  const [choice, setChoice] = useState<Choice | null>(initial);
 
   useEffect(() => {
+    if (initial === "accepted") loadMetrika();
+    if (initial) return;
+    // Переносим выбор, сделанный до появления cookie (старые визиты).
     const saved = window.localStorage.getItem(KEY);
-    if (saved === "accepted") {
-      loadMetrika();
-      setChoice("accepted");
-    } else if (saved === "declined") {
-      setChoice("declined");
+    if (saved === "accepted" || saved === "declined") {
+      if (saved === "accepted") loadMetrika();
+      setChoice(saved);
+      document.cookie = `${KEY}=${saved}; path=/; max-age=${YEAR}; samesite=lax`;
     }
-    setReady(true);
-  }, []);
+  }, [initial]);
 
   function accept() {
-    window.localStorage.setItem(KEY, "accepted");
+    remember("accepted");
     loadMetrika();
     setChoice("accepted");
   }
 
   function decline() {
-    window.localStorage.setItem(KEY, "declined");
+    remember("declined");
     setChoice("declined");
   }
 
-  if (!ready || choice) return null;
+  if (choice) return null;
 
   return (
-    <div className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-140 rounded-[18px] border border-[var(--line)] bg-white p-4 shadow-[var(--shadow-brand)] sm:inset-x-auto sm:left-4 sm:right-4">
-      <p className="m-0 mb-3 text-meta leading-relaxed text-ink">
-        Мы используем файлы cookie и системы аналитики, чтобы сайт работал корректно и мы понимали,
-        что улучшить. Подробнее — в{" "}
-        <Link href="/privacy" className="font-semibold text-navy underline">
-          Политике конфиденциальности
-        </Link>
-        .
-      </p>
-      <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={accept}
-          className="min-h-10 rounded-full bg-navy px-4 text-meta font-semibold text-white hover:bg-navy-deep"
-        >
-          Принять
-        </button>
-        <button
-          type="button"
-          onClick={decline}
-          className="min-h-10 rounded-full border border-[var(--line)] px-4 text-meta font-semibold text-navy hover:bg-sky-tint"
-        >
-          Только необходимые
-        </button>
+    <div className="bg-[var(--color-sky-tint)]" role="region" aria-label="Согласие на использование cookie">
+      <div className="wrap flex flex-col gap-2.5 py-3 sm:flex-row sm:items-center sm:gap-6">
+        <p className="m-0 max-w-[80ch] text-[13px] leading-[1.45] text-ink">
+          Мы используем cookie и аналитику, чтобы сайт работал корректно. Подробнее — в{" "}
+          <Link href="/privacy" className="font-medium text-navy underline underline-offset-2">
+            Политике конфиденциальности
+          </Link>
+          .
+        </p>
+        <div className="flex shrink-0 gap-2 sm:ml-auto">
+          <button
+            type="button"
+            onClick={decline}
+            className="min-h-9 rounded-full border border-[var(--field-line)] px-4 text-[13px] font-medium text-navy transition-colors hover:bg-white"
+          >
+            Только необходимые
+          </button>
+          <button
+            type="button"
+            onClick={accept}
+            className="min-h-9 rounded-full bg-navy px-5 text-[13px] font-semibold text-white transition-colors hover:bg-navy-deep"
+          >
+            Принять
+          </button>
+        </div>
       </div>
     </div>
   );

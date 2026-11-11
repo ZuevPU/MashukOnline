@@ -2,12 +2,13 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 type Variant = "solid" | "light" | "ghost" | "outline";
-type Size = "md" | "sm";
+type Size = "md" | "sm" | "lg";
 
 const BASE =
   "inline-flex items-center justify-center gap-2 rounded-full font-semibold whitespace-nowrap no-underline transition-all duration-200 ease-brand";
 
 const SIZES: Record<Size, string> = {
+  lg: "min-h-14 px-8 text-ui",
   md: "min-h-12 px-5.5 text-sm",
   sm: "min-h-10 px-4 text-xs",
 };

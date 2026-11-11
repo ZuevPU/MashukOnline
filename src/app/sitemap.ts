@@ -7,7 +7,7 @@ const PAGES: { path: string; priority: number; changeFrequency: MetadataRoute.Si
   { path: "/courses", priority: 0.9, changeFrequency: "weekly" },
   { path: "/bestpractice", priority: 0.8, changeFrequency: "monthly" },
   { path: "/events/seminar", priority: 0.8, changeFrequency: "weekly" },
-  { path: "/events/media", priority: 0.8, changeFrequency: "weekly" },
+  { path: "/mediacompetencies", priority: 0.8, changeFrequency: "weekly" },
   { path: "/apply", priority: 0.7, changeFrequency: "monthly" },
   { path: "/info", priority: 0.5, changeFrequency: "monthly" },
   { path: "/muni", priority: 0.5, changeFrequency: "monthly" },

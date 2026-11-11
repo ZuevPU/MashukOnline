@@ -34,9 +34,6 @@ const nextConfig: NextConfig = {
         { source: "/interethnic", destination: "/apply" },
         { source: "/educationatitsbest", destination: "/info" },
         { source: "/educationatpeak", destination: "/events/seminar" },
-        { source: "/mediacompetencies", destination: "/events/media" },
-        // Форма заявки — по короткому адресу от лендинга программы
-        { source: "/mediacompetencies/apply", destination: "/events/media/apply" },
         { source: "/municipalharmony", destination: "/muni" },
         { source: "/cultistudform", destination: "/cultistud" },
         { source: "/edu", destination: "/" },
@@ -49,6 +46,15 @@ const nextConfig: NextConfig = {
       afterFiles: [],
       fallback: [],
     };
+  },
+  // Анкета медиасеминара живёт прямо на лендинге /mediacompetencies.
+  // Старые адреса формы и страницы события ведут туда же — к блоку заявки.
+  async redirects() {
+    return [
+      { source: "/mediacompetencies/apply", destination: "/mediacompetencies#zayavka", permanent: true },
+      { source: "/events/media/apply", destination: "/mediacompetencies#zayavka", permanent: true },
+      { source: "/events/media", destination: "/mediacompetencies", permanent: true },
+    ];
   },
   // Долгий кэш публичных медиафайлов (обложки курсов, бренд).
   async headers() {

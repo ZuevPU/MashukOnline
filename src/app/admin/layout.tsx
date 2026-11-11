@@ -44,6 +44,11 @@ export default async function AdminLayout({ children }: { children: ReactNode })
               Программы
             </Link>
           )}
+          {(user.isCenterAdmin || programs.length > 0) && (
+            <Link href="/admin/builds" className="font-semibold text-navy no-underline hover:underline">
+              Сборки
+            </Link>
+          )}
           {hasApplications && (
             <Link href="/admin/applications" className="font-semibold text-navy no-underline hover:underline">
               Заявки

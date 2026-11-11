@@ -86,6 +86,12 @@ export function BuildPanel({
               Открыть
               <ExternalLink size={13} />
             </a>
+            <a
+              href={`/admin/builds?program=${encodeURIComponent(slug)}`}
+              className="inline-flex items-center gap-1.5 font-semibold text-navy"
+            >
+              Все сборки
+            </a>
             <Button tone="danger" size="sm" className="ml-auto" onClick={remove}>
               <Trash2 size={13} />
               Удалить сборку
@@ -136,7 +142,7 @@ export function BuildPanel({
 
       <ul className="m-0 grid gap-1.5 pl-5 text-meta leading-relaxed text-ink-soft">
         <li>В корне папки — <code>index.html</code>; ссылки на стили, скрипты и картинки — относительные.</li>
-        <li>До 200 МБ и 2000 файлов; поддерживаются HTML, CSS, JS, шрифты, изображения, видео, PDF.</li>
+        <li>До 200 МБ и 2000 файлов; поддерживаются HTML, CSS, JS, шрифты, изображения, видео, PDF, DOCX и PPTX.</li>
         <li>Новая загрузка полностью заменяет прежнюю сборку.</li>
       </ul>
     </div>

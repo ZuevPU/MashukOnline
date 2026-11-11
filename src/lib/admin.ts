@@ -26,6 +26,8 @@ export interface AdminProgram {
   members: number;
   hasPassword: boolean;
   hasBuild: boolean;
+  /** Когда загружена последняя авторская сборка; null — сборки нет. */
+  buildUploadedAt: Date | null;
 }
 
 export interface ProgramStaff {
@@ -68,6 +70,7 @@ export const listManagedPrograms = cache(async (user: SessionUser): Promise<Admi
       season: schema.programs.season,
       hasPassword: sql<boolean>`${schema.programs.accessPasswordHash} is not null`,
       hasBuild: sql<boolean>`${schema.programs.buildUploadedAt} is not null`,
+      buildUploadedAt: schema.programs.buildUploadedAt,
       members: sql<number>`(select count(*)::int from program_members pm where pm.program_id = ${schema.programs.id})`,
     })
     .from(schema.programs)

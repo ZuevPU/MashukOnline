@@ -6,7 +6,6 @@ export function SiteFooter() {
     <footer id="contacts" className="mesh py-14">
       <div className="wrap grid gap-10 md:grid-cols-[1.2fr_0.8fr] md:items-end">
         <div>
-          <p className="eyebrow eyebrow--light">Поддержка</p>
           <h2 className="m-0 mb-3 font-display text-[clamp(28px,4vw,40px)] font-semibold tracking-[-0.03em] text-white">
             Техническая поддержка
           </h2>
@@ -20,7 +19,7 @@ export function SiteFooter() {
           <p className="mt-5">
             <a
               href="mailto:online@czmashuk.ru"
-              className="font-display text-lead font-semibold text-white no-underline shadow-[0_1px_0_0_rgba(255,255,255,0.4)]"
+              className="font-display text-lead font-semibold text-white underline decoration-white/40 decoration-1 underline-offset-4"
             >
               online@czmashuk.ru
             </a>
@@ -44,7 +43,7 @@ export function SiteFooter() {
               Политика конфиденциальности
             </Link>
           </nav>
-          <p className="m-0 text-caption text-white/45">© 2026, АНО «Центр знаний «Машук»</p>
+          <p className="m-0 text-[13px] text-white/45">© 2026, АНО «Центр знаний «Машук»</p>
         </div>
       </div>
     </footer>

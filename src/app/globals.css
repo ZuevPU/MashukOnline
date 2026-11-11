@@ -103,6 +103,13 @@
   --shadow-brand: 0 18px 55px rgba(34, 63, 154, 0.09);
   --shadow-soft: 0 4px 20px rgba(34, 63, 154, 0.035);
   --wrap-max: 1180px;
+
+  /* Поля форм: спокойная рамка в покое, заметная — в фокусе */
+  --field-line: rgba(34, 63, 154, 0.16);
+  --field-line-hover: rgba(34, 63, 154, 0.32);
+  --field-ring: rgba(34, 63, 154, 0.12);
+  --danger-soft: rgba(193, 57, 74, 0.07);
+  --danger-ring: rgba(193, 57, 74, 0.14);
 }
 
 [data-season="spring"] {
@@ -333,6 +340,60 @@
     line-height: 1.2;
   }
 
+  /* --- Поле формы ---
+     Тихая рамка в покое, синий контур в фокусе. Кегль 16px: на телефоне
+     браузер не приближает страницу при фокусе, а текст читается без прищура. */
+  .form-field {
+    width: 100%;
+    min-height: 52px;
+    padding: 13px 16px;
+    border: 1px solid var(--field-line);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--color-black-ink);
+    font: 400 16px/1.45 var(--font-body);
+    transition:
+      border-color 0.2s var(--ease-brand),
+      box-shadow 0.2s var(--ease-brand);
+  }
+
+  .form-field::placeholder {
+    color: #6f675c;
+  }
+
+  .form-field:hover {
+    border-color: var(--field-line-hover);
+  }
+
+  .form-field:focus {
+    outline: none;
+    border-color: var(--color-navy);
+    box-shadow: 0 0 0 4px var(--field-ring);
+  }
+
+  .form-field[aria-invalid="true"] {
+    border-color: var(--color-danger);
+  }
+
+  .form-field[aria-invalid="true"]:focus {
+    box-shadow: 0 0 0 4px var(--danger-ring);
+  }
+
+  textarea.form-field {
+    min-height: 136px;
+    padding-top: 14px;
+    resize: vertical;
+  }
+
+  .form-select {
+    appearance: none;
+    padding-right: 44px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23655d53' d='M6 8 0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 12px 8px;
+  }
+
   /* --- Длинные тексты: методички и аналитика (Noto Serif) --- */
   .prose-brand {
     font-family: var(--font-long);
@@ -509,7 +570,7 @@
 
 @media (max-width: 680px) {
   .wrap {
-    width: min(100% - 28px, var(--wrap-max));
+    width: min(100% - 32px, var(--wrap-max));
   }
 
   .section {

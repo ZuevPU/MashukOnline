@@ -75,16 +75,16 @@ export async function SiteHeader() {
 
         <nav
           aria-label="Основная навигация"
-          className="order-3 w-full text-meta sm:order-none sm:w-auto sm:ml-auto md:text-sm"
+          className="order-3 w-full text-[13px] sm:order-none sm:ml-auto sm:w-auto sm:text-meta md:text-sm"
         >
-          <ul className="m-0 flex list-none flex-wrap items-center gap-x-5 gap-y-1 p-0">
+          <ul className="m-0 flex list-none flex-wrap items-center gap-x-4 gap-y-1 p-0 sm:gap-x-5">
             {NAV.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
                   target={item.external ? "_blank" : undefined}
                   rel={item.external ? "nofollow noopener" : undefined}
-                  className="no-underline transition-colors duration-200 hover:text-navy"
+                  className="whitespace-nowrap no-underline transition-colors duration-200 hover:text-navy"
                 >
                   {item.label}
                 </Link>
@@ -94,13 +94,13 @@ export async function SiteHeader() {
         </nav>
 
         <div className="ml-auto flex items-center gap-3 sm:ml-0">
-          <span className="hidden md:flex">
+          <span className="hidden lg:flex">
             <Social />
           </span>
           {!user && lmsConfigured() ? (
             <a
               href="/api/auth/sso/lms/start"
-              className="hidden text-meta font-semibold text-navy no-underline hover:underline sm:inline"
+              className="hidden text-meta font-semibold text-navy no-underline hover:underline lg:inline"
             >
               Войти через LMS
             </a>

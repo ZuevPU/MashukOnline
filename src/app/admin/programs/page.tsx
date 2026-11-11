@@ -58,7 +58,13 @@ export default async function AdminHome() {
                   <span className="flex flex-wrap gap-2 text-caption">
                     <Badge on>{program.members} в составе</Badge>
                     <Badge on={program.hasPassword}>{program.hasPassword ? "Вход по паролю открыт" : "Пароль не задан"}</Badge>
-                    <Badge on={program.hasBuild}>{program.hasBuild ? "Сборка загружена" : "Без сборки"}</Badge>
+                    {program.hasBuild && program.buildUploadedAt ? (
+                      <Badge on>
+                        Сборка · {program.buildUploadedAt.toLocaleDateString("ru-RU", { day: "numeric", month: "short", year: "numeric", timeZone: "Europe/Moscow" })}
+                      </Badge>
+                    ) : (
+                      <Badge on={false}>Без сборки</Badge>
+                    )}
                   </span>
                 </Link>
               </li>

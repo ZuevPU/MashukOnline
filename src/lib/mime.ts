@@ -27,6 +27,9 @@ const TYPES: Record<string, string> = {
   ".webm": "video/webm",
   ".mp3": "audio/mpeg",
   ".pdf": "application/pdf",
+  ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 };
 
 export function contentTypeFor(file: string): string | null {

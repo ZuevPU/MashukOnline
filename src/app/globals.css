@@ -581,3 +581,15 @@
     width: 100%;
   }
 }
+
+  /* Пары полей в форме: подписи сверху, поля выровнены по нижней линии строки,
+     поэтому СНИЛС и ИНН, округ и регион стоят на одном уровне. */
+  .form-grid > * {
+    display: flex;
+    flex-direction: column;
+    align-self: stretch;
+  }
+
+  .form-grid > * > .form-field {
+    margin-top: auto;
+  }

@@ -250,7 +250,7 @@ export function ApplicationForm({
     stepCount ? (section.fields[0]?.step ?? 1) === step : true,
   );
 
-  const gridClass = "grid grid-cols-1 gap-x-6 gap-y-6 md:grid-cols-2";
+  const gridClass = "form-grid grid grid-cols-1 gap-x-6 gap-y-6 md:grid-cols-2";
 
   const renderField = (field: FieldDef) => (
     <FieldInput

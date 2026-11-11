@@ -9,6 +9,7 @@ export const BUILD_SHORT_LINKS: Record<string, string> = {
   interethnic_3: "/interethnic_3",
   interethnic_4: "/interethnic_4",
   competence: "/competence",
+  ops26: "/ops26",
 };
 
 /** Публичный адрес файла сборки: короткий, если он задан. */

@@ -299,6 +299,7 @@ export async function submitForm(
         departureTime: str(data, "departure_time", 20) || null,
         accommodation: str(data, "accommodation", 200) || null,
         accommodationNote: str(data, "accommodation_note", 300) || null,
+        accommodationPayment: str(data, "accommodation_payment", 200) || null,
         agreeConsent: yesNo(list(data, "agree_consent")[0]),
         payloadRaw: data,
       })

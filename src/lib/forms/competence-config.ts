@@ -101,6 +101,17 @@ export const competenceConfig: FormConfig = {
           wide: true,
         },
         {
+          name: "accommodation_payment",
+          label: "Форма оплаты проживания",
+          hint: "Заполняется, если планируете жить в гостиничном комплексе Центра",
+          type: "radio",
+          options: opts(
+            "Платежной картой на стойке регистрации гостиничного комплекса",
+            "По счёту",
+          ),
+          wide: true,
+        },
+        {
           name: "accommodation_note",
           label: "Комментарий по размещению",
           hint:

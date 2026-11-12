@@ -2,6 +2,7 @@ import Image from "next/image";
 import { ButtonLink } from "@/components/ui/Button";
 import { MountainLine } from "@/components/brand/MountainLine";
 import { CourseCard } from "@/components/courses/CourseCard";
+import { CoursePromo } from "@/components/home/CoursePromo";
 import { SupportForm } from "@/components/site/SupportForm";
 import { COURSES, MARATHON_URL } from "@/lib/courses";
 
@@ -61,6 +62,13 @@ export default function HomePage() {
           </div>
         </div>
         <MountainLine className="text-white" />
+      </section>
+
+      {/* ------------------------------------------------------------ НОВЫЙ КУРС */}
+      <section className="section pt-12">
+        <div className="wrap">
+          <CoursePromo />
+        </div>
       </section>
 
       {/* ----------------------------------------------------------- ПРЕИМУЩЕСТВА */}

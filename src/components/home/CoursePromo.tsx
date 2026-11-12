@@ -4,66 +4,50 @@ import Link from "next/link";
 /**
  * Плашка нового курса на главной: «Искусственный интеллект в работе наставника».
  *
- * Синяя карточка с лисом-талисманом, меткой «Новый курс» и кнопкой на регистрацию
- * в LMS. Стоит сразу после первого экрана, до каталога программ.
+ * Стиль — из визуальной концепции курса: кремовый фон, тонкая красная рамка,
+ * синий заголовок, пилюли с ролями и цифровой маскот в голубом круге.
  */
 export function CoursePromo() {
   return (
-    <section className="promo-course" aria-labelledby="ai-course-title">
-      <div className="promo-course__ridge" aria-hidden="true">
-        <svg viewBox="0 0 1200 260" preserveAspectRatio="none" fill="none">
-          <path
-            d="M0 210 L120 168 L240 214 L360 150 L480 208 L600 128 L720 200 L840 142 L960 206 L1080 160 L1200 214"
-            stroke="rgba(168,217,247,.55)"
-            strokeWidth="2"
-          />
-          <path
-            d="M0 244 L120 206 L240 248 L360 190 L480 244 L600 172 L720 238 L840 186 L960 244 L1080 202 L1200 250"
-            stroke="rgba(168,217,247,.28)"
-            strokeWidth="1.6"
-          />
-        </svg>
-      </div>
-
-      <div className="promo-course__in">
-        <div className="promo-course__body">
-          <p className="promo-course__badge">
-            <i aria-hidden="true" /> Новый курс
+    <section className="course-card" aria-labelledby="ai-course-title">
+      <div className="course-card__in">
+        <div className="course-card__body">
+          <p className="course-card__eyebrow">
+            <i aria-hidden="true" /> Онлайн-курс · старт открыт
           </p>
 
-          <h2 className="promo-course__title" id="ai-course-title">
+          <h2 className="course-card__title" id="ai-course-title">
             Искусственный интеллект
             <br />в работе <em>наставника</em>
           </h2>
 
-          <p className="promo-course__lead">
-            Шесть модулей о том, как встроить ИИ в ежедневную практику: готовить тексты и документы,
-            планировать встречи, собирать презентации и рабочие листы, делать квизы и трекеры без
-            программирования — с проверкой результата и заботой о персональных данных.
+          <p className="course-card__lead">
+            Шесть модулей о том, как встроить ИИ в ежедневную практику: тексты и документы, планы
+            встреч, презентации, рабочие листы, квизы и трекеры — с проверкой результата.
           </p>
 
-          <ul className="promo-course__facts">
-            <li>6 модулей</li>
-            <li>4 направления</li>
-            <li>практикумы и шаблоны</li>
-            <li>сертификат</li>
+          <ul className="course-card__chips">
+            <li className="course-card__chip course-card__chip--accent">Конструктор промтов</li>
+            <li className="course-card__chip">Редактор</li>
+            <li className="course-card__chip">Дизайнер</li>
+            <li className="course-card__chip">Менеджер</li>
           </ul>
 
-          <div className="promo-course__actions">
+          <div className="course-card__actions">
             <a
-              className="promo-course__btn promo-course__btn--main"
+              className="course-card__btn course-card__btn--blue"
               href="https://lms.mashuk.online/education/listener/course_sessions/iskusstvennyi-intellekt-v-rabote-nastavnika-11-12/register"
               target="_blank"
               rel="noopener"
             >
               Начать обучение
               <svg
-                width="16"
-                height="16"
+                width="15"
+                height="15"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2"
+                strokeWidth="2.2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 aria-hidden="true"
@@ -72,21 +56,24 @@ export function CoursePromo() {
                 <path d="M8 7h9v9" />
               </svg>
             </a>
-            <Link className="promo-course__btn promo-course__btn--ghost" href="/programs">
+            <Link className="course-card__btn course-card__btn--line" href="/programs">
               Все программы
             </Link>
           </div>
         </div>
 
-        <div className="promo-course__fox">
-          <Image
-            src="/brand/mascot/maskot_right-trim.png"
-            alt="Лис — талисман Центра знаний «Машук»"
-            width={900}
-            height={936}
-            sizes="(max-width: 900px) 60vw, 340px"
-            className="h-auto w-full"
-          />
+        <div className="course-card__media">
+          <div className="course-card__circle" aria-hidden="true" />
+          <div className="course-card__robot">
+            <Image
+              src="/brand/mascot/promo-robot.png"
+              alt="Цифровой помощник — робот с планшетом и клавиатурой"
+              width={760}
+              height={806}
+              sizes="(max-width: 900px) 60vw, 260px"
+              className="h-auto w-full"
+            />
+          </div>
         </div>
       </div>
     </section>

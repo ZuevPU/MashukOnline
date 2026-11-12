@@ -3,6 +3,8 @@ import { ButtonLink } from "@/components/ui/Button";
 import { MountainLine } from "@/components/brand/MountainLine";
 import { ApplicationForm } from "@/components/forms/ApplicationForm";
 import { mediaConfig } from "@/lib/forms/media-config";
+import { FormGate } from "@/components/forms/FormGate";
+import { gateOpen } from "@/lib/forms/gate";
 
 export const metadata: Metadata = {
   title: "Медиакомпетенции: семинар 25–28 ноября 2026",
@@ -66,7 +68,10 @@ const FACTS = [
 const H2 =
   "m-0 font-display text-[clamp(30px,3.6vw,46px)] leading-[1.08] font-semibold tracking-[-0.04em] text-navy";
 
-export default function MediaCompetenciesPage() {
+export default async function MediaCompetenciesPage() {
+  // Страница закрыта паролем (MEDIA_FORM_PASSWORD), пока он не введён
+  if (!(await gateOpen("media"))) return <FormGate form="media" title={mediaConfig.title} />;
+
   return (
     <>
       <section className="mesh relative flex min-h-[62svh] flex-col justify-center overflow-hidden pt-16 pb-20 sm:pt-20 sm:pb-24 lg:min-h-[72svh] lg:pt-24 lg:pb-28">

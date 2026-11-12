@@ -14,6 +14,7 @@ type FormId = FormConfig["id"];
 
 const PASSWORD_ENV: Partial<Record<FormId, string>> = {
   muni: "MUNI_FORM_PASSWORD",
+  media: "MEDIA_FORM_PASSWORD",
 };
 
 function formPassword(form: FormId): string {

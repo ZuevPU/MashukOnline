@@ -25,6 +25,20 @@ export interface Course {
 
 export const COURSES: Course[] = [
   {
+    slug: "ii-nastavnik",
+    title: "Искусственный интеллект в работе наставника",
+    description:
+      "Шесть модулей о том, как встроить ИИ в ежедневную практику наставника: готовить тексты и " +
+      "документы, планировать встречи, собирать презентации, схемы и рабочие листы, делать квизы " +
+      "и трекеры без программирования. Отдельно — безопасность, персональные данные и проверка " +
+      "результата: что можно делегировать, а где нужно личное участие.",
+    url: "https://lms.mashuk.online/education/listener/course_sessions/iskusstvennyi-intellekt-v-rabote-nastavnika-11-12/register",
+    tag: "Наставничество и ИИ",
+    image: "/courses/ii-nastavnik.jpg",
+    icon: "cpu",
+    season: "autumn",
+  },
+  {
     slug: "russkii-kod",
     title: "Русский код: культура, идентичность, слово",
     description:

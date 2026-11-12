@@ -1,0 +1,1 @@
+ALTER TABLE "competence_applications" ADD COLUMN "accommodation_note" text;

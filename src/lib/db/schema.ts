@@ -655,6 +655,7 @@ export const competenceApplications = pgTable(
     departureDate: text("departure_date"),
     departureTime: text("departure_time"),
     accommodation: text("accommodation"),
+    accommodationNote: text("accommodation_note"),
     agreeConsent: text("agree_consent"),
   },
   (table) => [

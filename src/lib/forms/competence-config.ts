@@ -100,6 +100,16 @@ export const competenceConfig: FormConfig = {
           required: true,
           wide: true,
         },
+        {
+          name: "accommodation_note",
+          label: "Комментарий по размещению",
+          hint:
+            "Если хотите жить в двухместном номере с конкретным коллегой — укажите его ФИО. " +
+            "По возможности учтём пожелание при расселении",
+          type: "text",
+          maxLength: 300,
+          wide: true,
+        },
       ],
     },
     {

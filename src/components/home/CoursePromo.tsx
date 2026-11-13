@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 
 /**
  * Плашка нового курса на главной: «Искусственный интеллект в работе наставника».
@@ -56,9 +55,14 @@ export function CoursePromo() {
                 <path d="M8 7h9v9" />
               </svg>
             </a>
-            <Link className="course-card__btn course-card__btn--line" href="/programs">
-              Все программы
-            </Link>
+            <a
+              className="course-card__btn course-card__btn--line"
+              href="https://lms.mashuk.online/education/listener/course_sessions/iskusstvennyi-intelekt-v-rabote-nastavnika-11-12"
+              target="_blank"
+              rel="noopener"
+            >
+              Программа курса
+            </a>
           </div>
         </div>
 

@@ -58,7 +58,7 @@ const nextConfig: NextConfig = {
       {
         source: "/ai26",
         destination:
-          "https://lms.mashuk.online/education/listener/course_sessions/iskusstvennyi-intelekt-v-rabote-nastavnika-11-12/register",
+          "https://lms.mashuk.online/education/listener/course_sessions/iskusstvennyi-intellekt-v-rabote-nastavnika-11-12/register",
         permanent: false,
       },
     ];

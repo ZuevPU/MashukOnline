@@ -54,6 +54,13 @@ const nextConfig: NextConfig = {
       { source: "/mediacompetencies/apply", destination: "/mediacompetencies#zayavka", permanent: true },
       { source: "/events/media/apply", destination: "/mediacompetencies#zayavka", permanent: true },
       { source: "/events/media", destination: "/mediacompetencies", permanent: true },
+      // Короткий адрес курса «ИИ в работе наставника» — для QR и презентаций
+      {
+        source: "/ai26",
+        destination:
+          "https://lms.mashuk.online/education/listener/course_sessions/iskusstvennyi-intelekt-v-rabote-nastavnika-11-12/register",
+        permanent: false,
+      },
     ];
   },
   // Долгий кэш публичных медиафайлов (обложки курсов, бренд).

@@ -35,7 +35,7 @@ export function CoursePromo() {
           <div className="course-card__actions">
             <a
               className="course-card__btn course-card__btn--blue"
-              href="https://lms.mashuk.online/education/listener/course_sessions/iskusstvennyi-intellekt-v-rabote-nastavnika-11-12"
+              href="https://lms.mashuk.online/education/listener/course_sessions/iskusstvennyi-intellekt-v-rabote-nastavnika-11-12/register"
               target="_blank"
               rel="noopener"
             >
@@ -57,7 +57,7 @@ export function CoursePromo() {
             </a>
             <a
               className="course-card__btn course-card__btn--line"
-              href="https://lms.mashuk.online/education/listener/course_sessions/iskusstvennyi-intelekt-v-rabote-nastavnika-11-12"
+              href="https://lms.mashuk.online/education/listener/course_sessions/iskusstvennyi-intelekt-v-rabote-nastavnika-11-12/register"
               target="_blank"
               rel="noopener"
             >
